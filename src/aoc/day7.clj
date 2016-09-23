@@ -8,10 +8,15 @@
   [[board pending] c]
   (get board c))
 
+(defn parse-int
+  [s]
+  (let [parsed (read-string s)]
+       (when (integer? parsed) parsed)))
+
 (defn parse
   [[board pending] instruction]
   (let [[t1 t2 t3 t4 t5] (clojure.string/split instruction #"\ +")
-        [v1 v2 v3] (map #(get board %) [t1 t2 t3])
+        [v1 v2 v3] (map #(or (parse-int %) (get board %)) [t1 t2 t3])
         [n1 n3] (map read-string [t1 t3])
         parsed (cond
                   (= t2 "->"    ) (when n1 (assoc board t3 n1))
@@ -25,7 +30,9 @@
 
 (defn parse-all
   [[board instructions]] 
-  (reduce parse [board []] instructions))
+  (let [[new-board new-inst] (reduce parse [board []] instructions)]
+       (when (not= (set instructions) (set new-inst))
+             [new-board new-inst])))
 
 (defn still-pending? [[_ pending]] (> (count pending) 0))
 
