@@ -38,8 +38,19 @@
        (is (= {"x" 123 "y" 456 "d" 72  "e" 507 "f" 492 "g" 114 "h" 65412 "i" 65079}
               board))))
 
+(def instructions (clojure.string/split (slurp "resources/day7.input.txt") #"\n"))
 
 (deftest part-a
-  (let [instructions (clojure.string/split (slurp "resources/day7.input.txt") #"\n")
-        board (load-board instructions)]
+  (let [board (load-board instructions)]
        (is (= 46065 (get board "a")))))
+
+(defn replace-b-assignment
+  [instructions b-value]
+  (let [b-assignment? #(clojure.string/ends-with? % "-> b")]
+       (->> instructions
+            (remove b-assignment?)
+            (cons (str b-value " -> b")))))
+
+(deftest part-b
+  (let [board (-> instructions (replace-b-assignment 46065) load-board)]
+       (is (= 14134 (get board "a")))))
