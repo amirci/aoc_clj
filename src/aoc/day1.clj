@@ -1,5 +1,5 @@
-(ns aoc.day1
-  (:gen-class))
+(ns aoc.day1)
+
 
 (defn paren [p]
   (if (= p \( ) 1 -1))
