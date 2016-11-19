@@ -28,7 +28,20 @@
          (map #(properties transposed %))
          (apply max))))
 
+(defn cal-500? [[p cal]] (= 500 cal))
 
+(defn cal-properties
+  [ing qty]
+  (let [calories (first (drop 4 ing))]
+    [(properties ing qty)
+     (->> calories (map * qty) (apply +))]))
 
-
+(defn best-light-cookie
+  [ingredients]
+  (let [transposed (transpose ingredients)]
+    (->> combinations
+         (map #(cal-properties transposed %))
+         (filter cal-500?)
+         (map first)
+         (apply max))))
 

@@ -17,6 +17,8 @@
 (deftest example-matches-results
   (is (= 62842880 (properties [[-1 2] [-2 3] [6 -2] [3 -1]] [44 56]))))
 
-
 (deftest part-a-find-best-cookie
   (is (= 18965440 (best-cookie input))))
+
+(deftest part-b-find-best-light-cookie
+  (is (= 15862900 (best-light-cookie input))))
