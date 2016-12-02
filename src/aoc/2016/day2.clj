@@ -5,6 +5,13 @@
   (into {}
         (for [x (range 3) y (range 3)] [(inc (+ (* x 3) y)) [x y]])))
 
+(def keypad2
+  {1 [0 2]
+   2 [1 1] 3 [1 2] 4 [1 3]
+   5 [2 0] 6 [2 1] 7 [2 2] 8 [2 3] 9 [2 4]
+   \A [3 1] \B [3 2] \C [3 3]
+   \D [4 2]})
+
 (def nbr->point keypad)
 
 (def point->nbr (clojure.set/map-invert keypad))
