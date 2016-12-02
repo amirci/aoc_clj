@@ -22,3 +22,9 @@
 (deftest part-a
   (is (= 273 (blocks-away instructions))))
 
+(deftest duplicate-test
+  (is (= 4 (first-repeated ["R8" "R4" "R4" "R8"]))))
+
+(deftest part-b
+  (is (= 115 (first-repeated instructions))))
+
