@@ -26,3 +26,29 @@
        (filter real-room?)
        (map #(Integer. (first (drop 1 %))))
        (reduce +)))
+
+(defn rotate [l n] (concat (drop n l) (take n l)))
+
+(def abc (apply str (map char (range 97 123))))
+
+(defn decrypt-char
+  [cipher c n]
+  (let [i (clojure.string/index-of cipher c)]
+    (if (= c \-) \  (char (+ 97 i)))))
+
+(defn decrypt
+  [[room-name sector]]
+  (let [sector (Integer. sector)
+        n (- 26 (mod sector 26))
+        cipher (apply str (rotate abc n))]
+    (->> room-name
+         (map #(decrypt-char cipher % n))
+         (apply str))))
+
+
+(defn sector-for
+  [room-name rooms]
+  (->> rooms
+       (filter #(= room-name (decrypt %)))
+       first
+       last))
