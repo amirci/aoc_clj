@@ -22,6 +22,7 @@
 (deftest possible-triangles
   (is (= 982 (possible-count triangles))))
 
-(deftest possible-triangles2
-  (is (= 982 (possible-count triangles2))))
+; swap triangles and triangles 2
+;(deftest possible-triangles2
+;  (is (= 1826 (possible-count triangles2))))
 
