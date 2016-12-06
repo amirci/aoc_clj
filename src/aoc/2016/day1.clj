@@ -11,6 +11,8 @@
 
 (defn mk-map [r l] {:R r :L l})
 
+(def add-pt #(->> % (map abs) (reduce +)))
+
 (defn from-dir
   [dir lor n]
   (let [nn (- n)
@@ -48,22 +50,26 @@
     (for [i (neg-range x1 x2)] [i  y1])))
 
 (defn find-intersection
-  ([points] (find-intersection (set (take 1 points)) (drop 1 points)))
-  ([visited [current & rst]]
-   (when current
-     (if-let [found (visited current)]
-       found
-       (find-intersection (conj visited current) rst)))))
+  ([coll] (reduce find-intersection (set (take 1 coll)) (drop 1 coll)))
+  ([visited current]
+   (if-let [found (visited current)]
+     (->> found
+          add-pt
+          reduced)
+     (conj visited current))))
+
+(defn expand-points
+  [coll]
+  (mapcat points coll (drop 1 coll)))
 
 (defn first-repeated
   [instructions]
-  (let [all-pts (->> instructions
-                     (map parse)
-                     (reductions distance [:north [0 0]])
-                     (map last))
-        expanded (mapcat points all-pts (drop 1 all-pts))]
-    (->> (find-intersection expanded)
-         (map abs)
-         (reduce +))))
+  (->> instructions
+       (map parse)
+       (reductions distance [:north [0 0]])
+       (map last)
+       expand-points
+       find-intersection))
+
 
 
