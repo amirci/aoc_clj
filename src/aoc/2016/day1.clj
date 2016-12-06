@@ -36,8 +36,7 @@
        (map parse)
        (reduce distance [:north [0 0]])
        last
-       (map abs)
-       (reduce +)))
+       add-pt))
 
 (defn neg-range
   [start end]
