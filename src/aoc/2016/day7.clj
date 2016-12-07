@@ -27,8 +27,41 @@
        (map has-abba?)
        check))
 
+
+(defn aba? 
+  [[a b c]] 
+  (and (= a c) (not= a b)))
+
+
+(defn to-bab [[a b]] [b a b])
+
+(defn check-aba-bab
+  [matches]
+  (let [supernet (mapcat #(filter aba? %) (take-nth 2 matches))
+        hypernet (mapcat #(filter aba? %) (take-nth 2 (rest matches)))]
+    (->> supernet
+         (map to-bab)
+         set
+         (clojure.set/intersection (set hypernet))
+         empty?
+         not)))
+
+(defn to-triplet
+  [code]
+  (map vector code (drop 1 code) (drop 2 code)))
+
+(defn ssl?
+  [code]
+  (->> code
+       (re-seq #"[a-z]+")
+       (map to-triplet)
+       check-aba-bab))
+
 (defn count-tls
   [codes]
-  (->> codes
-      (filter tls?)
-      count))
+  (->> codes (filter tls?) count))
+
+(defn count-ssl
+  [codes]
+  (->> codes (filter ssl?) count))
+

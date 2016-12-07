@@ -16,3 +16,14 @@
 ; rank 362 at 38 min
 (deftest part-a
   (is (= 115 (count-tls instructions))))
+
+
+(deftest part-b-samples
+  (testing "supports ssl"
+    (is (ssl? "aba[bab]xyz")))
+  (testing "does not support ssl"
+    (is (not (ssl? "xyx[xyx]xyx")))))
+
+; Rank 354 at 22:05
+(deftest part-b
+  (is (= 231 (count-ssl instructions))))
