@@ -5,32 +5,32 @@
   [[a b c d]]
   (and (= b c) (= a d) (not= a b)))
 
+(defn aba?
+  [[a b c]]
+  (and (= a c) (not= a b)))
+
+(defn n-tuple
+  [n code]
+  (->> (range n)
+       (map #(drop % code))
+       (apply map vector)))
+
 (defn has-abba?
   [code]
-  (->> (map vector code (drop 1 code) (drop 2 code) (drop 3 code))
+  (->> code
+       (n-tuple 4)
        (filter abba?)
        first
        nil?
        not))
 
-(defn check
-  [matches]
-  (let [valid (take-nth 2 matches)
-        invalid (take-nth 2 (rest matches))]
-    (and (some identity valid)
-         (not (some identity invalid)))))
-
 (defn tls?
   [code]
-  (->> code
-       (re-seq #"[a-z]+")
-       (map has-abba?)
-       check))
-
-
-(defn aba? 
-  [[a b c]] 
-  (and (= a c) (not= a b)))
+  (let [code (re-seq #"[a-z]+" code)
+        supernet (take-nth 2 code)
+        hypernet (take-nth 2 (rest code))]
+    (and (some has-abba? supernet)
+         (not-any? has-abba? hypernet))))
 
 
 (defn to-bab [[a b]] [b a b])
@@ -46,15 +46,11 @@
          empty?
          not)))
 
-(defn to-triplet
-  [code]
-  (map vector code (drop 1 code) (drop 2 code)))
-
 (defn ssl?
   [code]
   (->> code
        (re-seq #"[a-z]+")
-       (map to-triplet)
+       (map #(n-tuple 3 %))
        check-aba-bab))
 
 (defn count-tls
