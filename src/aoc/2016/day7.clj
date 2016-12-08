@@ -9,16 +9,10 @@
   [[a b c]]
   (and (= a c) (not= a b)))
 
-(defn n-tuple
-  [n code]
-  (->> (range n)
-       (map #(drop % code))
-       (apply map vector)))
-
 (defn has-abba?
   [code]
   (->> code
-       (n-tuple 4)
+       (partition 4 1)
        (filter abba?)
        first
        nil?
@@ -50,7 +44,7 @@
   [code]
   (->> code
        (re-seq #"[a-z]+")
-       (map #(n-tuple 3 %))
+       (map #(partition 3 1 %))
        check-aba-bab))
 
 (defn count-tls
