@@ -64,11 +64,10 @@
        (find-by-val v)
        first))
 
-(defn find-bot1
-  [min-v max-v cmds]
-  (loop [[_ _ pending :as state] [{} {} cmds]]
-    (if-let [bot (find-by-val [min-v max-v])]
-      (first bot)
-      (if (empty? pending)
-        nil
-        (recur (load-cmds state))))))
+(defn process-all
+  [cmds]
+  (->> cmds
+       load-cmds-loop
+       (drop-while (fn [[bots _ pending]]
+                     (not (empty? pending))))
+       first))

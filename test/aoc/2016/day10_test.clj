@@ -30,3 +30,10 @@
 
 (deftest part-a
   (is (= "86" (find-bot [17 61] instructions))))
+
+
+(deftest part-b
+  (let [[_ output _] (process-all instructions)
+        actual (->> ["0" "1" "2"] (map output) (apply *))]
+        (is (= 1 actual))))
+
