@@ -28,12 +28,12 @@
 ;  (is (= 97714 (cdec instructions))))
 ;
 
-;(deftest part-b-sample-2
-;  (is (= 1 (cdec2 "X(8x2)(3x3)ABCY"))))
-;
-;(deftest part-b-sample-3
-;  (is (= 241920 (cdec2 "(27x12)(20x12)(13x14)(7x10)(1x12)A"))))
+(deftest part-b-sample-2
+  (is (= 20 (decompress2 "X(8x2)(3x3)ABCY"))))
 
-(deftest part-b
-  (is (= 1 (cdec2 instructions))))
+(deftest part-b-sample-3
+  (is (= 241920 (decompress2 "(27x12)(20x12)(13x14)(7x10)(1x12)A"))))
+
+;(deftest part-b
+;  (is (= 10762972461 (decompress2 instructions))))
 
