@@ -35,5 +35,5 @@
 (deftest part-b
   (let [[_ output _] (process-all instructions)
         actual (->> ["0" "1" "2"] (map output) (apply *))]
-        (is (= 1 actual))))
+        (is (= 22847 actual))))
 
