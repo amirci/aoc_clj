@@ -36,23 +36,22 @@
   (if (< ptr (count cmds))
     (let [f (parse-memo (nth cmds ptr))
           [f-ptr registers] (f registers)]
-      (trace ">>>>>> " [ptr (nth cmds ptr) registers])
-      [(trace "----- " (f-ptr ptr)) registers cmds])
+      [(f-ptr ptr) registers cmds])
     [ptr registers cmds]))
 
-(def evaluations #(iterate eval-instruction [0 {"a" 0 "b" 0 "c" 0 "d" 0} %]))
+(def init-zero {"a" 0 "b" 0 "c" 0 "d" 0})
 
-(defn valid-ptr
-  [[ptr _ cmds]]
-   (< ptr (count cmds)))
+(defn evaluations [init cmds] (iterate eval-instruction [0 init cmds]))
+
+(defn valid-ptr [[ptr _ cmds]] (< ptr (count cmds)))
 
 (defn run-assembunny
-  [cmds]
-  (->> cmds
-       (map #(split % #" "))
-       evaluations
-       ;(drop 100)
-       (drop-while valid-ptr)
-       first
-       (drop 1)
-       first))
+  ([cmds] (run-assembunny init-zero cmds))
+  ([init cmds]
+   (->> cmds
+        (map #(split % #" "))
+        (evaluations init)
+        (drop-while valid-ptr)
+        first
+        (drop 1)
+        first)))

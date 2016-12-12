@@ -20,5 +20,10 @@
   (is (= 42 ((run-assembunny sample-instructions) "a"))))
 
 (deftest part-a
-  (let [registers (run-assembunny instructions)]
+  (let [registers (time (run-assembunny instructions))]
     (is (= 318009 (registers "a")))))
+
+(deftest part-b
+  (let [registers (time (run-assembunny (assoc init-zero "c" 1) instructions))]
+    (is (= 9227663 (registers "a")))))
+
