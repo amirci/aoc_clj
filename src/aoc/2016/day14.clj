@@ -9,6 +9,11 @@
   [salt]
   (memoize (fn [i] [i (digest/md5 (str salt i))])))
 
+(defn hash-gen-2016
+  [salt]
+  (memoize (fn [i] [i (->> (str salt i) (iterate digest/md5) (drop 2017) first)])))
+
+
 (defn valid-hash?
   [hgen [i hsh]]
   (when-let [l (last (re-find #"(\w)\1\1" hsh))]
@@ -25,9 +30,10 @@
        first))
 
 (defn pad-key-gen
-  [salt]
-  (let [hgen (hash-gen salt)]
-    (drop 1 (iterate (fn [[i _]] (next-key hgen (inc i))) [-1]))))
+  ([salt] (pad-key-gen salt hash-gen))
+  ([salt gen-fn]
+   (let [hgen (gen-fn salt)]
+     (drop 1 (iterate (fn [[i _]] (next-key hgen (inc i))) [-1])))))
 
 
 

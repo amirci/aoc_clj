@@ -14,6 +14,12 @@
       (is (= [22728 (digest/md5 "abc22728")] key)))))
 
 ; rank 598
-(deftest part-a
-  (let [key (nth (pad-key-gen salt) 63)]
-    (is (= [1 (digest/md5 (str salt 1))] key))))
+;(deftest part-a
+;  (let [key (nth (pad-key-gen salt) 63)]
+;    (is (= [23769 (digest/md5 (str salt 23769))] key))))
+;
+;
+;(deftest part-b
+;  (let [key (nth (pad-key-gen salt hash-gen-2016) 63)]
+;    (is (= [20606 (digest/md5 (str salt 20606))] key))))
+
