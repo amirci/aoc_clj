@@ -22,15 +22,15 @@
    #{}])
 
 
-(deftest possible-up-test
-  (let [actual (possible-up sample-spec)
-        expected [2 [:mli] [:gh :mh] [:gli] []]]
-    (is (= [expected] actual))))
-
-(deftest possible-moves-test
-  (let [actual (possible-moves sample-spec)
-        expected [2 [:mli] [:gh :mh] [:gli] []]]
-    (is (= [expected] actual))))
+;(deftest possible-up-test
+;  (let [actual (possible-up sample-spec)
+;        expected [2 [:mli] [:gh :mh] [:gli] []]]
+;    (is (= [expected] actual))))
+;
+;(deftest possible-moves-test
+;  (let [actual (possible-moves sample-spec)
+;        expected [2 [:mli] [:gh :mh] [:gli] []]]
+;    (is (= [expected] actual))))
 
 
 (def middle-spec
@@ -40,10 +40,10 @@
    #{:gco :gpm :gru :mco :mpm}
    #{:mcu :mru}])
 
-(deftest part-a
-  (let [sp (time (shortest-top-floor part-a-spec))]
-    ;(doseq [spec path] (print-spec spec))
-    (is (= 33 sp))))
+;(deftest part-a
+;  (let [sp (time (shortest-top-floor part-a-spec))]
+;    ;(doseq [spec path] (print-spec spec))
+;    (is (= 33 sp))))
 
 ;(deftest part-b
 ;  (let [sp (time (shortest-top-floor part-b-spec))]
