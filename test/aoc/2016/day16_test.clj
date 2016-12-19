@@ -6,7 +6,7 @@
   (is (= (seq "10000011110010000111") (dragon-curve "10000" 20))))
 
 (deftest part-a-sample-checksum-test
-  (is (= "1" (odd-checksum2 "10000" 20))))
+  (is (= "01100" (odd-checksum2 "10000" 20))))
 
 ; rank 425
 (deftest part-a
