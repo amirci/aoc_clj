@@ -3,16 +3,13 @@
 (defn to-digit [c] (- (int c) 48))
 
 (defn captcha
-  [[x & xs :as input]]
+  [input]
   (->> input
-       seq
        (cons (last input))
-       (partition-by identity)
-       (filter #(> (count %) 1))
-       (map (juxt (comp dec count)
-                  (comp to-digit first)))
-       (map #(apply * %))
-       (reduce + 0)))
+       (partition 2 1)
+       (filter #(apply = %))
+       (map (comp to-digit first))
+       (apply +)))
 
 (defn add-half
   [s]
@@ -27,9 +24,8 @@
 (defn captcha2
   [input]
   (->> input
-       seq
        add-half
        (partition (half-+-1 input) 1)
        (filter matching?)
        (map (comp to-digit first))
-       (reduce + 0)))
+       (apply +)))
