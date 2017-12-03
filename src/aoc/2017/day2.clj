@@ -1,4 +1,5 @@
-(ns aoc.2017.day2)
+(ns aoc.2017.day2
+  (:require [clojure.math.combinatorics :as combo]))
 
 
 (defn to-numbers
@@ -11,20 +12,15 @@
   [ns]
   (- (apply max ns) (apply min ns)))
 
+(defn divides? [a b] (zero? (rem a b)))
+
 (defn div-divisible
   [ns]
-  (let [sorted (sort ns)]
-    (->> sorted
-         (map-indexed (fn [i n]
-                        (->> sorted
-                             (drop (inc i))
-                             (filter #(= 0 (rem % n)))
-                             first
-                             (conj [n]))))
-         (filter (comp not nil? second))
-         first
-         reverse
-         (apply /))))
+  (->> (combo/combinations ns 2)
+       (map (comp reverse sort))
+       (filter (partial apply divides?))
+       first
+       (apply /)))
 
 (defn checksum
   [lines]
@@ -38,7 +34,7 @@
   (->> lines
        (map to-numbers)
        (map div-divisible)
-       (apply + 0)))
+       (apply +)))
 
 
 
