@@ -34,5 +34,5 @@
 ;351   11   23   25   26
 ;362  747  806  880  931
 
-(defn spiral-b
+(defn something
   [])
