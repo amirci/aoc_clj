@@ -4,13 +4,14 @@
 
 
 
-;(deftest part-b
-;  (->> "resources/2017/day5.input.txt"
-;       slurp
-;       clojure.string/split-lines
-;       count-steps-to-exist-maze-b
-;       (= 23948711)
-;       is))
-;
-;
-;
+(deftest part-a
+  (->> 277678
+       path-to-center-spiral
+       (= 475)
+       is))
+
+(deftest part-b
+  (->> 277678
+       find-larger-in-spiral-b
+       (= 279138)
+       is))

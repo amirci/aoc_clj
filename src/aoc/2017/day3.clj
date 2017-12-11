@@ -1,38 +1,72 @@
-;65  64                          57
-;    37  36  35  34  33  32  31  56
-;    38  17  16  15  14  13  30  55
-;    39  18   5   4   3  12  29  54
-;    40  19   6   1   2  11  28  53
-;    41  20   7   8   9  10  27  52
-;    42  21  22  23  24  25  26  51
-;    43  44  45  46  47  48  49  50
-;73                              81
+(ns aoc.2017.day3
+  (:require [clojure.tools.trace :refer [trace]]))
 
+(defn square-bounds
+  [n]
+  (let [isq (int (Math/sqrt n))
+        r   (if (odd? isq) 0 1)
+        lower (- isq r)]
+    [lower (+ 2 lower)]))
 
-; Closest square (Math/sqrt 277678)
-; 526.951610681664
+(def square #(* % %))
 
-; Upper bound (* 527 527)
-; 277729
+(defn path-to-center-spiral
+  [n]
+  (let [[lb ub :as bounds] (square-bounds n)
+        [slb sub] (map square bounds)
+        diff-ub (- sub n)
+        side (/ (- sub slb) 4)
+        halfway (/ side 2)
+        rem-side (rem diff-ub side)
+        to-center (+ halfway (- halfway rem-side))]
+    (int to-center)))
 
-; Difference with target (- 277729 277678)
-; 51
+(defn vplus
+  [[a b] [c d]]
+  [(+ a c) (+ b d)])
 
-; Halfway (/ 526 2)
-; 263
+(defn neighbours
+  [v]
+  (for [x [-1 0 1] y [-1 0 1] :when (not= [x y] [0 0])]
+    (vplus v [x y])))
 
-; Difference to center (- 263 51)
-; 212
+(defn square-range
+  [sn]
+  (let [n (+ 1 (* 2 sn))
+        nsn (* -1 sn)
+        [x y] [0 (dec sn)]]
+    ;[0 1] [-1 2] [-2 3]
+    (concat
+      (for [i (range 1 n)] [(+ nsn i) sn])  ; up
+      (for [i (range 1 n)] [sn (- sn i)])   ; left
+      (for [i (range 1 n)] [(- sn i) nsn])  ; down
+      (for [i (range 1 n)] [nsn (+ nsn i)])))) ; right
 
-; + going up to middle (+ 212 263)
-; 475
+(defn sum-neighbours
+  [m c]
+  (->> c
+       neighbours
+       (map m)
+       (remove nil?)
+       (apply +)))
 
-;;; ---- part B
-;147  142  133  122   59
-;304    5    4    2   57
-;330   10    1    1   54
-;351   11   23   25   26
-;362  747  806  880  931
+(defn update-square
+  [n m sq]
+  (reduce 
+    (fn [m* c]
+      (let [v (sum-neighbours m* c)]
+        (if (> v n)
+          (reduced v)
+          (assoc m* c v))))
+    m
+    sq))
 
-(defn something
-  [])
+(defn find-larger-in-spiral-b
+  [n]
+  (->> (range)
+       (drop 1)
+       (map square-range)
+       (reduce #(let [v (update-square n %1 %2)]
+                  (if (map? v) v (reduced v)))
+                  {[0 0] 1})))
+
