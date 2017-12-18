@@ -49,25 +49,18 @@
   [c]
   (->> {:cfg c :seen #{} :duplicate nil}
        (iterate new-config)
-       (take-while #(-> % :duplicate nil?))))
-
-(defn first-duplicate
-  [c]
-  (->> {:cfg c :seen #{} :duplicate nil}
-       (iterate new-config)
-       (drop-while #(-> % :duplicate nil?))
-       first
-       :duplicate))
+       (split-with #(-> % :duplicate nil?))))
 
 (defn find-first-duplicate-config-length
   [c]
   (-> c
       config-until-duplicate
+      first
       count))
 
 (defn find-loop-length
   [c]
-  (let [cfs (config-until-duplicate c)
-        dup (first-duplicate c)
+  (let [[cfs dups] (config-until-duplicate c)
+        dup (-> dups first :duplicate)
         skip (take-while #(-> % :cfg (not= dup)) cfs)]
     (- (count cfs) (count skip))))
