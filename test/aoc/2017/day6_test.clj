@@ -12,8 +12,15 @@
 
 (deftest part-a
   (-> input
-      find-first-duplicate-config
+      find-first-duplicate-config-length
       (= 4074)
+      is))
+
+
+(deftest part-b
+  (-> input
+      find-loop-length
+      (= 2793)
       is))
 
 
