@@ -14,4 +14,11 @@
                    "jgz a -2"])
 
 (deftest example-part-a
-  (is (= 5 (take 2 (run-program instructions)))))
+  (is (= 4 (find-first-rcv instructions))))
+
+(def input (-> "resources/2017/day18.input.txt"
+               slurp
+               clojure.string/split-lines))
+
+(deftest part-a
+  (is (= 4601 (find-first-rcv input))))

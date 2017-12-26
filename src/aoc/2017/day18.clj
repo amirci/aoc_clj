@@ -4,22 +4,27 @@
     [clojure.tools.trace :refer [trace]]
     [blancas.kern.lexer.basic :refer :all]))
 
+(def val-p
+  (<$> (comp constantly read-string)
+       (<+> (optional (sym \-)) dec-num)))
 
-(def val-p 
-  (<$> (fn [[s n]] (constantly (* (read-string (str s "1")) n)))
-       (<*> (option \+ (sym \-)) dec-num)))
-
-(def register-p (<$> #(fn [st] (get-in st [:regs %])) letter))
+(def register-p (<$> #(fn [st] (or (get-in st [:regs %]) 0)) letter))
 
 (def reg-or-val-p (<|> register-p val-p))
 
 (defn reg-fn-p [tk] (<*> (token tk) letter space reg-or-val-p))
 
+(defn inc-ptr
+  [st]
+  (update st :ptr inc))
+
+(defn update-register-with-op
+  [op reg val-fn st] 
+  (update-in st [:regs reg] #(op (or % 0) (val-fn st))))
+
 (defn reg-update-p
-  [tk f]
-  (<$> (fn [[_ r _ v-fn]] (fn [st] (-> st
-                                       (update :ptr inc)
-                                       (update-in [:regs r] #(f % (v-fn st))))))
+  [tk op]
+  (<$> (fn [[_ reg _ val-fn]] (comp inc-ptr (partial update-register-with-op op reg val-fn)))
     (reg-fn-p tk)))
 
 ;; set x
@@ -36,18 +41,31 @@
 
 ;; snd a
 (def snd-p
-  (<$> (fn [f] #(assoc % :snd (f %)))
+  (<$> (fn [f] (comp inc-ptr #(assoc % :snd (f %))))
     (>> (token "snd") reg-or-val-p)))
+
+(defn recover-last
+  [f st]
+  (if (not= 0 (f st))
+    (assoc st :rcv true)
+    st))
 
 ;; rcv a
 (def rcv-p
-  (<$> (fn [f] #(if (not= 0 (f %)) (assoc % :rcv true)))
+  (<$> (fn [f] (comp inc-ptr (partial recover-last f)))
     (>> (token "rcv") reg-or-val-p)))
+
+(defn jump-greater-zero
+  [fr fjump st]
+  (if (not= 0 (fr st))
+    (update st :ptr (partial + (fjump st)))
+    (inc-ptr st)))
 
 ;; jgz a -1
 (def jgz-p
-  (<$> (fn [_ fr _ fjmp] (fn [st] (if (not= 0 (fr st)) (update st :ptr (partial + (fjmp st))))))
-    (<*> (token "jgz") reg-or-val-p space reg-or-val-p )))
+  (<$>
+    (fn [[_ fr _ fjump]] (partial jump-greater-zero fr fjump))
+    (<*> (token "jgz") reg-or-val-p space reg-or-val-p)))
 
 (def inst-parser (<|> set-p add-p mul-p mod-p snd-p rcv-p jgz-p))
 
@@ -64,10 +82,14 @@
        (hash-map :ptr 0 :regs {} :snd nil :inst)
        (iterate run-one)))
 
-(defn find-first-rcv 
+(defn find-first-rcv
   [inst]
   (->> inst
        run-program
        (drop-while (complement :rcv))
        first
        :snd))
+
+(defn run-both-programs
+  [inst]
+  )
