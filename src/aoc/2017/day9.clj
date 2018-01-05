@@ -6,21 +6,46 @@
 (def begin-group (sym \{))
 (def end-group   (sym \}))
 
-(declare group)
+
+(defn remove-escaped
+  [input]
+  (loop [parsed "" left input]
+    (let [[a b] (split-with (partial not= \!) left)]
+      (if (empty? b)
+        (apply str parsed a)
+        (recur (apply str parsed a) (drop 2 b))))))
 
 (def garbage
   (bind [_ (sym \<)
-         ls (many-till any-char (sym \>))
-         _ (sym \>)]))
-  ; read garbage until group starts
-  ; read garbage until group starts or ends
+         _ (many-till any-char (sym \>))]
+        (return 0)))
 
-(def group
-  (bind [_ begin-group
-         v (comma-sep (<|> group garbage))
-         _ end-group]
-        (return (apply + 1 v))))
-  
+(defn group
+  [level]
+  (bind [_ (sym \{)
+         v (comma-sep (<|> (group (inc level)) garbage))
+         _ (sym \})]
+        (return (apply + level v))))
 
 (defn group-score
-  ([input] (value (group 0) input)))
+  [s]
+  (->> s
+       remove-escaped
+       (value (group 1))))
+
+(def garbage*
+  (bind [_ (sym \<)
+         t (many-till any-char (sym \>))]
+        (return (count t))))
+
+(def group*
+  (bind [_ (sym \{)
+         v (comma-sep (<|> group* garbage*))
+         _ (sym \})]
+        (return (apply + v))))
+
+(defn count-garbage
+  [s]
+  (->> s
+       remove-escaped
+       (value group*)))
