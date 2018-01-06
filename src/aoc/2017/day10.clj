@@ -22,15 +22,40 @@
 
 
 (defn build-hash
-  ([lens] (build-hash (range 256) lens))
-  ([nums lens]
-   (->> {:nums nums
-         :lengths lens
-         :curr 0
-         :skip 0}
-        (iterate build-hash-step)
-        (drop-while :lengths)
-        first
-        :nums
-        (take 2)
-        (apply *))))
+  [m]
+  (->> m
+       (iterate build-hash-step)
+       (drop-while :lengths)
+       first))
+
+
+(defn first-two
+  [lens]
+  (->> {:nums (range 256) :curr 0 :skip 0 :lengths lens}
+       build-hash
+       :nums
+       (take 2)
+       (apply *)))
+
+(defn full-run
+  [lens m]
+  (-> m
+      (assoc :nums (range 256) :lengths lens)
+      build-hash))
+
+(defn knot
+  [input]
+  (let [lens (->> input
+                  (map str)
+                  (clojure.string/join ",")
+                  (map int))
+        fr (partial full-run (concat lens [17 31 73 47 23]))]
+    (->> {:curr 0 :skip 0}
+         (iterate fr)
+         (drop 65)
+         first
+         :nums
+         (partition 16)
+         (map (partial apply bit-xor))
+         (map (partial format "%02x"))
+         clojure.string/join)))
