@@ -1,7 +1,5 @@
 (ns aoc.2017.day10
-  (:require
-    [blancas.kern.core :refer :all]
-    [blancas.kern.lexer.basic :refer :all]))
+  (:require [clojure.tools.trace :refer [trace]]))
 
 (defn rotate
   [coll n]
@@ -41,18 +39,16 @@
   [lens m]
   (-> m
       (assoc :nums (range 256) :lengths lens)
-      build-hash))
+      build-hash
+      trace))
 
 (defn knot
   [input]
-  (let [lens (->> input
-                  (map str)
-                  (clojure.string/join ",")
-                  (map int))
+  (let [lens (->> input (map int))
         fr (partial full-run (concat lens [17 31 73 47 23]))]
     (->> {:curr 0 :skip 0}
          (iterate fr)
-         (drop 65)
+         (drop 3)
          first
          :nums
          (partition 16)
