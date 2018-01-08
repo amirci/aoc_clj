@@ -11,11 +11,14 @@
                    "5 <-> 6"
                    "6 <-> 4, 5"])
 
-(def input 
+(def graph 
   (-> "resources/2017/day12.input.txt"
       slurp
       clojure.string/split-lines
       load-programs))
 
 (deftest part-a
-  (is (= 128 (count (collect-grp 0 input)))))
+  (is (= 128 (count (collect-group 0 graph)))))
+
+(deftest part-b
+  (is (= 209 (count-distinct-groups graph))))
