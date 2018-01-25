@@ -16,65 +16,68 @@
        (map #(value layer-parser %))
        (into {})))
 
-;Rng 3 (mod 6)
-;0 -> 0 
-;1 -> 1
-;2 -> 2
-;3 -> 2
-;4 -> 1
-;5 -> 0
-;
-;Rng 2 (mod 4)
-;0 -> 0
-;1 -> 1
-;2 -> 1
-;3 -> 0
-
-;Rng 4 (mod 6)
-;0  -> 0
-;1  -> 1
-;2  -> 2
-;3  -> 3
-;4  -> 2 (4) (6 - 4)
-;5  -> 1 (5) (6 - 5)
-;6  -> 0 (0)
-;7  -> 1 (1)
-;8  -> 2 (2)
-;9  -> 3 (3)
-;10 -> 2 (4) (6 - 4)
-;11 -> 1 (5) (6 - 5)
-;12 -> 0
-
-;Rng 5 (mod 8)
-;5  -> 3 (5) (8 - 5)
-;6  -> 2 (6) (8 - 6)
-;7  -> 1 (7) (8 - 7)
-
 (defn pico->pos
-  [ps rnge]
-  (let [r (- (* rnge 2) 2)
-        p (mod ps r)]
-    (if (>= p rnge) (- r p) p)))
+  [pico rng]
+  (let [r (- (* rng 2) 2)
+        p (mod pico r)]
+    (if (>= p rng) (- r p) p)))
 
 (defn severity
-  [m k]
-  (* k (get m k 0)))
-
-(defn sum-severity
-  [lys total ps]
-  (let [rnge (get lys ps)]
+  [layers dly idx]
+  (let [rng (layers idx)]
     (cond
-      (nil? rnge) total
-      (zero? (pico->pos ps rnge)) (+ total (* ps rnge))
-      :else       total)))
+      (nil? rng) 0
+      (zero? (pico->pos (+ idx dly) rng)) (trace (* idx rng))
+      :else 0)))
+
+(defn scanners
+  [layers]
+  (->> layers
+       keys
+       (apply max)
+       inc
+       range))
 
 (defn trip-severity
-  [lines]
-  (let [lys (read-layers lines)
-        picosecs (apply max (keys lys))]
-    (reduce (partial sum-severity lys) 
-            0
-            (range (inc picosecs)))))
+  ([lines] (trip-severity lines 0))
+  ([lines dly]
+   (let [layers (read-layers lines)
+         calc-severity (partial severity layers dly)]
+     (->> layers
+          scanners
+          (map calc-severity)
+          (apply +)))))
 
+
+(defn is-safe?
+  [layers dly idx]
+  (let [rng (layers idx)]
+    (cond
+      (nil? rng) true
+      (zero? (pico->pos (+ idx dly) rng)) false
+      :else true)))
+
+(defn safe-path?
+  [layers dly]
+  (->> layers
+       scanners
+       (every? (partial is-safe? layers dly))))
+
+(defn got-caught?
+  [layers {:keys [dly] :as st}]
+  (-> st
+      (update :dly inc)
+      (assoc :caught? (not (safe-path? layers dly)))))
+
+(defn safe-trip-delay
+  [lines]
+  (let [layers (read-layers lines)]
+    (->> {:dly 0 :caught? false}
+         (iterate (partial got-caught? layers))
+         (drop 1)
+         (drop-while :caught?)
+         first
+         :dly
+         dec)))
 
 
