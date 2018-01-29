@@ -26,9 +26,9 @@
   [layers dly idx]
   (let [rng (layers idx)]
     (cond
-      (nil? rng) 0
-      (zero? (pico->pos (+ idx dly) rng)) (trace (* idx rng))
-      :else 0)))
+      (nil? rng) nil
+      (zero? (pico->pos (+ idx dly) rng)) [idx rng]
+      :else nil)))
 
 (defn scanners
   [layers]
@@ -38,36 +38,28 @@
        inc
        range))
 
+(defn find-severity
+  [dly layers]
+  (let [sev (partial severity layers dly)]
+    (->> layers
+         scanners
+         (map sev)
+         (remove nil?))))
+
 (defn trip-severity
   ([lines] (trip-severity lines 0))
   ([lines dly]
-   (let [layers (read-layers lines)
-         calc-severity (partial severity layers dly)]
-     (->> layers
-          scanners
-          (map calc-severity)
-          (apply +)))))
-
-
-(defn is-safe?
-  [layers dly idx]
-  (let [rng (layers idx)]
-    (cond
-      (nil? rng) true
-      (zero? (pico->pos (+ idx dly) rng)) false
-      :else true)))
-
-(defn safe-path?
-  [layers dly]
-  (->> layers
-       scanners
-       (every? (partial is-safe? layers dly))))
+   (->> lines
+        read-layers
+        (find-severity dly)
+        (map (partial apply *))
+        (apply +))))
 
 (defn got-caught?
   [layers {:keys [dly] :as st}]
   (-> st
       (update :dly inc)
-      (assoc :caught? (not (safe-path? layers dly)))))
+      (assoc :caught? (not (empty? (find-severity dly layers))))))
 
 (defn safe-trip-delay
   [lines]
@@ -79,5 +71,3 @@
          first
          :dly
          dec)))
-
-
