@@ -1,14 +1,15 @@
 (ns aoc.2018.day1-test
   (:require [clojure.test :refer :all]
-            [aoc.2018.day1 :refer :all]))
+            [aoc.2018.day1 :as d1]))
 
-(deftest a-test
-  (is (= 0 (visit "(())")))
-)
+(def file (slurp "resources/2018/day1.input.txt"))
 
-(deftest ends-in-floor-3
-  (is (= 3 (visit "(((")))
-  (is (= 3 (visit "(()(()(")))
-)
+(deftest part-a-test
+  (is (= 582 (d1/part-a file))))
 
+(deftest sample-b-test
+  (is (= 10 (d1/part-b "+3\n+3\n+4\n-2\n-4"))))
+
+(deftest part-b-test
+  (is (= 488 (d1/part-b file))))
 
