@@ -1,25 +1,30 @@
 (ns aoc.2018.day1)
 
-(defn part-a
-  [changes]
-  (->> changes
+(defn- ->changes
+  [file]
+  (->> file
        clojure.string/split-lines
-       (map #(Integer/parseInt %))
+       (map #(Integer/parseInt %))))
+
+(defn part-a
+  [file]
+  (->> file
+       ->changes
        (apply +)))
 
+(defn sum-until-repeated
+  [[seen sum] n]
+  (let [sum* (+ sum n)]
+    (if (seen sum*)
+      (reduced sum*)
+      [(conj seen sum*) sum*])))
 
 (defn part-b
-  [changes]
-  (->> changes
-       clojure.string/split-lines
-       (map #(Integer/parseInt %))
+  [file]
+  (->> file
+       ->changes
        cycle
-       (reduce (fn [[freqs sum] n]
-                 (let [sum* (+ sum n)]
-                   (if (freqs sum*)
-                     (reduced sum*)
-                     [(conj freqs sum*) sum*])))
-               [#{} 0])))
+       (reduce sum-until-repeated [#{} 0])))
 
 
 
