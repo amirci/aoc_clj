@@ -2,8 +2,11 @@
   (:require [clojure.test :refer :all]
             [aoc.2018.day2 :as d2]))
 
-(def input (slurp "resources/2018/day2.input.txt"))
+(def input 
+  (->> "resources/2018/day2.input.txt"
+       slurp
+       clojure.string/split-lines))
 
 (deftest part-a-test
-  (is (= 582 (d1/part-a file))))
+  (is (= 6972 (d2/checksum input))))
 
