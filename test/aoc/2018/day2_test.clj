@@ -8,5 +8,19 @@
        clojure.string/split-lines))
 
 (deftest part-a-test
-  (is (= 6972 (d2/checksum input))))
+  (is (= 6972 (d2/part-a input))))
+
+(deftest part-b-test
+  (is (= "aixwcbzrmdvpsjfgllthdyoqe" (d2/part-b input))))
+
+(def box ["abcde"
+         "fghij"
+         "klmno"
+         "pqrst"
+         "fguij"
+         "axcye"
+         "wvxyz"])
+
+(deftest part-b-sample-test
+  (is (= "fgij" (d2/part-b box))))
 
