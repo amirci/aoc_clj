@@ -65,12 +65,12 @@
   (let [log (->> log
                  (reduce parse-guards-sleep [{}])
                  first)
-        [guard] (find-guard-most-asleep log)
+        guard (first (find-guard-most-asleep log))
         intervals (log guard)
-        [_ mx] (->> intervals
-                    (map calc-minutes)
-                    (apply merge-with +)
-                    (apply max-key val))]
-    (* (read-string guard) mx)
-  ))
+        mm (->> intervals
+                (map calc-minutes)
+                (apply merge-with +)
+                (apply max-key val)
+                first)]
+    (* (read-string guard) mm)))
 
