@@ -47,10 +47,30 @@
 
 (defn find-guard-most-asleep
   [log]
-
   (->> log
-       (reduce parse-guards-sleep [{}])
-       first
        calc-total-sleep-minutes
        (apply max-key val)))
+
+(defn calc-minutes
+  [interval]
+  (let [start (.withTime (tm/start interval) 0 0 0 0)]
+    (->> (for [m (range 60)
+               :let [q (tm/plus start
+                                (tm/minutes m))]]
+           [m (if (tm/within? interval q) 1 0)])
+         (into {}))))
+
+(defn part-a
+  [log]
+  (let [log (->> log
+                 (reduce parse-guards-sleep [{}])
+                 first)
+        [guard] (find-guard-most-asleep log)
+        intervals (log guard)
+        [_ mx] (->> intervals
+                    (map calc-minutes)
+                    (apply merge-with +)
+                    (apply max-key val))]
+    (* (read-string guard) mx)
+  ))
 

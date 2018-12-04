@@ -8,6 +8,6 @@
        clojure.string/split-lines))
 
 
-
-(dut/find-guard-most-asleep (take 50 input))
+;; Guard 3209
+(dut/part-a input)
 
