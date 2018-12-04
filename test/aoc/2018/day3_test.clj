@@ -40,3 +40,6 @@
   (is (= 4
          (dut/total-overlap part-a-test-input))))
 
+(deftest part-a-test
+  (is (= 5 
+         (dut/total-overlap input))))
