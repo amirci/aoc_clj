@@ -49,7 +49,8 @@
   [log]
   (->> log
        calc-total-sleep-minutes
-       (apply max-key val)))
+       (apply max-key val)
+       first))
 
 (defn calc-minutes
   [interval]
@@ -62,11 +63,11 @@
 
 (defn part-a
   [log]
-  (let [log (->> log
-                 (reduce parse-guards-sleep [{}])
-                 first)
-        guard (first (find-guard-most-asleep log))
-        intervals (log guard)
+  (let [guards (->> log
+                    (reduce parse-guards-sleep [{}])
+                    first)
+        guard (find-guard-most-asleep guards)
+        intervals (guards guard)
         mm (->> intervals
                 (map calc-minutes)
                 (apply merge-with +)
@@ -74,3 +75,24 @@
                 first)]
     (* (read-string guard) mm)))
 
+(defn max-sleeping
+  [[g intervals]]
+  (->> intervals
+       (map calc-minutes)
+       (apply merge-with +)
+       (apply max-key val)
+       (cons (read-string g))
+       reverse
+       vec))
+
+(defn part-b
+  [log]
+  (->> log
+       (reduce parse-guards-sleep [{}])
+       first
+       (map max-sleeping)
+       sort
+       reverse
+       first
+       (drop 1)
+       (apply *)))

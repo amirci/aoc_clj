@@ -32,3 +32,10 @@
 (deftest part-a-test
   (is (= 102688 (dut/part-a input))))
 
+(deftest part-b-sample-test
+  (is (= 4455 (dut/part-b test-input))))
+
+(deftest part-b-test
+  (is (= 56901 (dut/part-b input))))
+
+
