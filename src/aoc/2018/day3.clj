@@ -16,7 +16,6 @@
   [[claims overlap]]
   (let [c (first claims)
         claims (rest claims)]
-    (println ">>>> " (count claims))
     [claims 
      (reduce
        (fn [overlap cx]
@@ -36,4 +35,38 @@
          first
          second
          count)))
+
+;; Part B
+
+(defn remove-overlapping-ids
+  [claims ids c1 id1]
+  (reduce
+    (fn [ids [id2 c2]]
+      (if (empty? (clojure.set/intersection c1 c2))
+        ids
+        (disj ids id1 id2)))
+    ids
+    claims))
+
+(defn calc-nooverlap
+  [[claims ids]]
+  (let [[id c] (first claims)
+        claims (dissoc claims id)]
+    (vector
+      claims
+      (remove-overlapping-ids claims ids c id))))
+
+(defn no-overlaps
+  [claims]
+  (let [claims (->> claims
+                    (map parse-claim)
+                    (map (juxt first claim->set))
+                    (into {}))]
+
+    (->> [claims (set (map first claims))]
+         (iterate calc-nooverlap)
+         (drop-while #(< 1 (count (second %))))
+         first
+         second
+         first)))
 
