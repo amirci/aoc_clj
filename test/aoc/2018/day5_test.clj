@@ -1,0 +1,18 @@
+(ns aoc.2018.day5-test
+  (:require [clojure.test :refer :all]
+            [aoc.2018.day5 :as dut]))
+
+(def input
+  (->> "resources/2018/day5.input.txt"
+       slurp
+       clojure.string/split-lines
+       first))
+
+(deftest part-a-sample-test
+ (is (= 10 (dut/part-a "dabAcCaCBAcCcaDA"))))
+
+(deftest part-a-test
+  (is (= 11720
+         (dut/part-a input))))
+
+
