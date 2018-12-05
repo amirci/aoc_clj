@@ -2,10 +2,6 @@
   (:require 
     [clojure.string :as str]))
 
-(defn the-pairs
-  [s]
-  (map vector s (drop 1 s)))
-
 (defn reactive?
   [component]
   (->> component
@@ -21,11 +17,6 @@
     (->> [i (inc i)]
          (map #(nth polymer %))
          reactive?)))
-
-(defn find-reactive-indexes
-  [polymer]
-  (filter (partial index-reactive? polymer)
-          (range (dec (count polymer)))))
 
 (defn adjust-reactive
   [^java.util.ArrayList polymer i total]
@@ -58,4 +49,18 @@
   [polymer]
   (count (reduce-polymer polymer)))
 
+(defn remove-unit
+  [polymer i]
+  (let [l (char i)
+        u (java.lang.Character/toUpperCase l)
+        pattern (re-pattern (str "[" l u "]"))]
+    (when (re-find pattern polymer)
+      (str/replace polymer pattern ""))))
 
+(defn part-b
+  [polymer]
+  (->> (range (int \a) (inc (int \z)))
+       (map (partial remove-unit polymer))
+       (remove nil?)
+       (map part-a)
+       (apply min)))

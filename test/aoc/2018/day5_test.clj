@@ -17,4 +17,12 @@
   (is (= 11720
          (dut/part-a input))))
 
+(deftest part-b-sample-test
+  (is (= 4
+         (dut/part-b component))))
+
+
+(deftest part-b-test
+  (is (= 4956
+         (dut/part-b input))))
 
