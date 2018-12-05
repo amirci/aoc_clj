@@ -8,8 +8,10 @@
        clojure.string/split-lines
        first))
 
+(def component "dabAcCaCBAcCcaDA")
+
 (deftest part-a-sample-test
- (is (= 10 (dut/part-a "dabAcCaCBAcCcaDA"))))
+  (is (= 10 (dut/part-a "dabAcCaCBAcCcaDA"))))
 
 (deftest part-a-test
   (is (= 11720

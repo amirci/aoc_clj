@@ -15,72 +15,47 @@
        (apply -)
        (= 32)))
 
-(defn rr
+(defn index-reactive? 
   [polymer i]
-  (->> [i (inc i)]
-       (map #(nth polymer %))
-       reactive?))
+  (when (< i (dec (count polymer)))
+    (->> [i (inc i)]
+         (map #(nth polymer %))
+         reactive?)))
 
-(defn remove-reactive
-  [i polymer]
-  (if i
-    (vec
-      (concat
-        (subvec polymer 0 i)
-        (subvec polymer (+ i 2))))
-    polymer))
-
-(defn find-reactive-index
+(defn find-reactive-indexes
   [polymer]
-  (first
-    (filter (partial rr polymer)
-            (range (dec (count polymer))))))
+  (filter (partial index-reactive? polymer)
+          (range (dec (count polymer)))))
+
+(defn adjust-reactive
+  [^java.util.ArrayList polymer i total]
+  (if (index-reactive? polymer i)
+    (do
+      (.remove polymer (int i))
+      (.remove polymer (int i))
+      [polymer (inc total)])
+    [polymer total]))
 
 (defn reduce-component
-  [[_ polymer]]
-  (println ">>>" (count polymer))
-  (let [i (find-reactive-index polymer)]
-    (vector 
-      i
-      (remove-reactive i polymer))))
+  [[polymer]]
+  (reduce
+    (fn [[p total] i]
+      (if (> i (dec (count p)))
+        (reduced [p total])
+        (adjust-reactive p i total)))
+    [polymer 0]
+    (range 1 (count polymer))))
 
 (defn reduce-polymer
   [polymer]
-  (->> [0 (vec polymer)]
+  (->> [(java.util.ArrayList. (into [] polymer)) 1]
        (iterate reduce-component)
-       (drop-while first)
+       (drop-while #(> (second %) 0))
        first
-       second))
+       first))
 
 (defn part-a
   [polymer]
   (count (reduce-polymer polymer)))
-
-(defn find-reactive
-  [polymer]
-  (->> polymer
-       the-pairs
-       (filter reactive?)
-       first))
-
-
-(defn remove-reactive*
-  [[_ polymer]]
-  (println (count polymer))
-  (let [r (find-reactive polymer)]
-    (vector
-      r
-      (if r
-        (clojure.string/replace-first polymer (apply str r) "")
-        polymer))))
-
-(defn reduce-polymer*
-  [polymer]
-  (->> [true polymer]
-       (iterate remove-reactive)
-       (drop-while first)
-       first
-       second
-       count))
 
 
