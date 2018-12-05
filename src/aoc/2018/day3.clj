@@ -4,10 +4,7 @@
 
 (defn parse-claim
   [sc]
-  (as-> sc result
-    (str/replace result #"[#@,:x]" " ")
-    (str "[" result "]")
-    (read-string result)))
+  (read-string (str "[" sc "]")))
 
 (defn claim->set
   [[_ x y w l]]
@@ -15,12 +12,28 @@
     (for [a (range x (+ x w)) b (range y (+ y l))]
       [a b]))) 
 
+(defn calc-overlap
+  [[claims overlap]]
+  (let [c (first claims)
+        claims (rest claims)]
+    (println ">>>> " (count claims))
+    [claims 
+     (reduce
+       (fn [overlap cx]
+         (clojure.set/union 
+           overlap
+           (clojure.set/intersection c cx)))
+       overlap
+       claims)])) 
+
 ;; Part A
 (defn total-overlap
   [claims]
   (let [claims (map (comp claim->set parse-claim) claims)]
-    (->> (for [c1 claims c2 claims :when (not= c1 c2)]
-           (clojure.set/intersection c1 c2))
-         (apply clojure.set/union)
+    (->> [claims #{}]
+         (iterate calc-overlap)
+         (drop-while (comp seq first))
+         first
+         second
          count)))
 
