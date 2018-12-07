@@ -24,3 +24,26 @@
 (deftest parta-test
   (is (= "HPDTNXYLOCGEQSIMABZKRUWVFJ"
          (dut/part-a input))))
+
+(dut/parse-deps sample-input)
+
+(def tt (-> input dut/parse-deps))
+
+;(dut/tick [0 pp [] [(dut/mk-worker \H)]])
+
+(tt \B) ; => A G H O Q
+(tt \N) ; => D H P T
+(tt \U) ; => C D E H I K M R
+(tt \A) ; => E M N O P SY
+(tt \H)
+(tt \X)
+(tt \P)
+(tt \D)
+
+(remove (comp seq tt) (keys tt))
+
+(dut/update-finished-deps tt #{\H})
+
+(keys tt)
+
+
