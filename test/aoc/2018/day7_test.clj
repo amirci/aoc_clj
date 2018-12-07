@@ -40,9 +40,16 @@
 (tt \P)
 (tt \D)
 
-(remove (comp seq tt) (keys tt))
 
-(dut/update-finished-deps tt #{\H})
+(def qq (dut/update-finished-deps (dissoc tt \H) #{\H}))
+
+(qq \B) ; => A G H O Q
+(qq \N) ; => D H P T
+(qq \U) ; => C D E H I K M R
+(qq \A) ; => E M N O P SY
+
+(remove (comp seq qq) (keys qq))
+
 
 (keys tt)
 
