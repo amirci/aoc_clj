@@ -45,3 +45,35 @@
        first
        (apply str)))
 
+;; PART B
+
+(defn work-time
+  [l]
+  (+ -4 (int l)))
+
+(defn mk-worker [l] [l (work-time l)])
+
+(def duration second)
+(def worker-task first)
+
+(defn tick
+  [total tree pending workers]
+  (let [elapsed  (apply min (map duration workers))
+        total    (+ total elapsed)
+        workers  (map (partial update-elapsed elapsed) workers)
+        finished (map worker-task (filter finished? workers))
+        workers* (remove finished? workers)
+        pending* (sort (concat pending (mapcat tree finished)))
+        tree     (apply disj tree finished)]
+  
+  ))
+
+(defn part-b
+  [input]
+  (let [init (ffirst (find-complete [[] input]))
+        [a & rst :as pending] (construction-order input)
+        tree (parse input)]
+    (->> [0 tree pending [(mk-worker init) [] [] [] []]]
+         (iterate tick)
+         (take 2))))
+
