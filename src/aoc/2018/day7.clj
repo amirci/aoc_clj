@@ -47,14 +47,12 @@
        (apply str)))
 
 ;; PART B
-(def abc "HPDTNXYLOCGEQSIMABZKRUWVFJ")
 
 (defn parse-deps
   [input]
-  (let [base (->> abc (map #(vector % (sorted-set))) (into {}))]
-    (->> input
-         (map (comp reverse parse-line))
-         (reduce build-tree base))))
+  (let [parsed (map (comp reverse parse-line) input)
+        base (->> parsed (map second) set (map #(vector % (sorted-set))) (into {}))]
+    (reduce build-tree base parsed)))
 
 (defn work-time
   [l]
@@ -63,7 +61,7 @@
 (defn mk-worker [l] [l (work-time l)])
 
 (def duration second)
-(def worker-task first)
+(def task first)
 
 (defn update-elapsed
   [elapsed [l wt :as worker]]
@@ -78,24 +76,38 @@
     deps
     (keys deps)))
 
+(def max-workers 5)
+
+(defn add-more-work
+  [workers available]
+  (let [amt (- max-workers (count workers))
+        new-workers (->> available (take amt) (map mk-worker))]
+    [(concat workers new-workers) (drop amt available)]))
+
+(defn remove-working-tasks
+  [deps workers]
+  (apply dissoc deps (map task workers)))
+
 (defn tick
   [[total deps pending workers]]
-  (let [elapsed  (apply min (map duration workers))
+  (let [elapsed  (if (seq workers) (apply min (map duration workers)) 0)
         total    (+ total elapsed)
         workers  (map (partial update-elapsed elapsed) workers)
-        finished (set (map worker-task (filter finished? workers)))
+        finished (set (map task (filter finished? workers)))
         workers* (remove finished? workers)
         deps*    (update-finished-deps deps finished)
-        pending* (sort (concat pending (mapcat deps finished)))
-        ]
-  [total deps* pending* workers*]
-  ))
+        pending* (clojure.set/union
+                   pending
+                   (apply sorted-set (remove (comp seq deps*) (keys deps*))))
+        [workers* pending*] (add-more-work workers* pending*)
+        deps* (remove-working-tasks deps* workers*)]
+  [total deps* pending* workers*]))
 
 (defn part-b
   [input]
-  (let [init (ffirst (find-complete [[] input]))
-        deps (parse-deps input)]
-    (->> [0 deps (sorted-set) [(mk-worker init)]]
+  (let [deps (parse-deps input)]
+    (->> [0 deps (sorted-set) []]
          (iterate tick)
-         (take 2))))
+         (drop-while (fn [[_ deps _ workers]] (or (seq deps) (seq workers))))
+         ffirst)))
 

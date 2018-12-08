@@ -25,32 +25,11 @@
   (is (= "HPDTNXYLOCGEQSIMABZKRUWVFJ"
          (dut/part-a input))))
 
-(dut/parse-deps sample-input)
+(deftest partb-test
+  (is (= 908
+         (dut/part-b input))))
 
-(def tt (-> input dut/parse-deps))
-
-;(dut/tick [0 pp [] [(dut/mk-worker \H)]])
-
-(tt \B) ; => A G H O Q
-(tt \N) ; => D H P T
-(tt \U) ; => C D E H I K M R
-(tt \A) ; => E M N O P SY
-(tt \H)
-(tt \X)
-(tt \P)
-(tt \D)
-
-
-(def qq (dut/update-finished-deps (dissoc tt \H) #{\H}))
-
-(qq \B) ; => A G H O Q
-(qq \N) ; => D H P T
-(qq \U) ; => C D E H I K M R
-(qq \A) ; => E M N O P SY
-
-(remove (comp seq qq) (keys qq))
-
-
-(keys tt)
-
+(deftest partb-sample-test
+  (is (= 253
+         (dut/part-b sample-input))))
 
