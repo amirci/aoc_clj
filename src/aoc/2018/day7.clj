@@ -79,35 +79,31 @@
 (def max-workers 5)
 
 (defn add-more-work
-  [workers available]
-  (let [amt (- max-workers (count workers))
-        new-workers (->> available (take amt) (map mk-worker))]
-    [(concat workers new-workers) (drop amt available)]))
-
-(defn remove-working-tasks
-  [deps workers]
-  (apply dissoc deps (map task workers)))
+  [workers deps]
+  (let [available (sort (remove (comp seq deps) (keys deps)))
+        amt       (- max-workers (count workers))
+        workers*  (->> available (take amt) (map mk-worker) (concat workers))
+        deps*     (apply dissoc deps (map task workers*))]
+    [workers* deps*]))
 
 (defn tick
-  [[total deps pending workers]]
+  [[total deps workers]]
   (let [elapsed  (if (seq workers) (apply min (map duration workers)) 0)
         total    (+ total elapsed)
         workers  (map (partial update-elapsed elapsed) workers)
         finished (set (map task (filter finished? workers)))
         workers* (remove finished? workers)
         deps*    (update-finished-deps deps finished)
-        pending* (clojure.set/union
-                   pending
-                   (apply sorted-set (remove (comp seq deps*) (keys deps*))))
-        [workers* pending*] (add-more-work workers* pending*)
-        deps* (remove-working-tasks deps* workers*)]
-  [total deps* pending* workers*]))
+        [workers* deps*] (add-more-work workers* deps*)]
+  [total deps* workers*]))
+
+(def empty-workers [])
 
 (defn part-b
   [input]
   (let [deps (parse-deps input)]
-    (->> [0 deps (sorted-set) []]
+    (->> [0 deps empty-workers]
          (iterate tick)
-         (drop-while (fn [[_ deps _ workers]] (or (seq deps) (seq workers))))
+         (drop-while (fn [[_ deps workers]] (or (seq deps) (seq workers))))
          ffirst)))
 
