@@ -18,3 +18,6 @@
 
 (deftest part-a-sample-test
   (is (= 138 (dut/part-a sample-input))))
+
+(deftest part-a-test
+  (is (= 40984 (dut/part-a input))))
