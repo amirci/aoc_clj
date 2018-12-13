@@ -19,6 +19,6 @@
   (is (= [7 3] (dut/part-a sample-input))))
 
 
-;(deftest part-a-test
-;  (is (= [0 0] (dut/part-a input))))
+(deftest part-a-test
+  (is (= [111 13] (dut/part-a input))))
 

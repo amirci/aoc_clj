@@ -79,7 +79,6 @@
 
 (defn tick
   [routes carts]
-  (println ">>> carts" carts)
   (->> carts
        sort
        (reduce
@@ -97,7 +96,6 @@
   (let [[routes carts] (parse-instructions input)]
     (->> carts
          (iterate (partial tick routes))
-         ;(take 3))))
          (drop-while (comp not :crash))
          first
          :crash
