@@ -8,9 +8,15 @@
        clojure.string/split-lines))
 
 (def sample-input
-  "/->-\\        "
-  "|   |  /----\\"
-  "| /-+--+-\\  |"
-  "| | |  | v  |"
-  "\\-+-/  \\-+--/"
-  "  \\------/  ")
+  ["/->-\\        "
+   "|   |  /----\\"
+   "| /-+--+-\\  |"
+   "| | |  | v  |"
+   "\\-+-/  \\-+--/"
+   "  \\------/  "])
+
+(def pp (dut/parse-instructions sample-input))
+
+
+(first pp)
+(second pp)

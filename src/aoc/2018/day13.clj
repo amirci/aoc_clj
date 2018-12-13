@@ -71,17 +71,18 @@
     \^ [(assoc routes [row col] vertical    ) (assoc carts [row col] [[-1 0]])]
     [routes carts]))
 
-(defn parse-map
+(defn parse-instructions
   [lines]
   (reduce
     (fn [[routes carts] [row line]]
       (reduce
         (fn [[routes carts row] [col c]]
-          (parse-char routes carts row col c))
+          (println ">>> ROW" row "--- COL" col)
+          (let [[routes carts] (parse-char routes carts row col c)]
+            [routes carts row]))
         [routes carts row]
         (map-indexed vector line)))
     [{} {}]
-    (map-indexed vector lines))
-  )
+    (map-indexed vector lines)))
 
 
