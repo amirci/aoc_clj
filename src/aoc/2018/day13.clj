@@ -28,29 +28,22 @@
   (let [new-dir (->> dir reverse (mapv (partial * -1)))]
     [(pos+dir pos new-dir) [new-dir state]]))
 
-(defn turn-right
-  [dir]
-  (case dir
-    [1  0] [0 1]
-    [-1 0] [0 1]
-    [0  1] [-1 0]
-    [0 -1] [-1 0]))
+(def d-up    [1  0])
+(def d-down  [-1 0])
+(def d-right [0  1])
+(def d-left  [0 -1])
 
-(defn turn-left
-  [dir]
-  (case dir
-    [1  0] [0  1]
-    [-1 0] [0 -1]
-    [0  1] [-1 0]
-    [0 -1] [1  0]))
+(defn turn-right [[x y]] [y (* -1 x)])
 
+(defn turn-left [[x y]] [(* -1 y) x])
+ 
 (defn intersection-turn
   "left -> straight -> right"
   [[dir state]]
   (case state
     :left     [dir :straight]
     :straight [(turn-right dir) :right]
-    [(turn-left  dir) :left]))
+    [(turn-left dir) :left]))
 
 (defn intersection
   [pos cart]
@@ -77,7 +70,6 @@
     (fn [[routes carts] [row line]]
       (reduce
         (fn [[routes carts row] [col c]]
-          (println ">>> ROW" row "--- COL" col)
           (let [[routes carts] (parse-char routes carts row col c)]
             [routes carts row]))
         [routes carts row]
@@ -85,4 +77,33 @@
     [{} {}]
     (map-indexed vector lines)))
 
+(defn follow-route
+  [routes [pos cart]]
+  (let [f (routes pos)]
+    (f pos cart)))
+
+(defn tick
+  [routes carts]
+  (->> carts
+       sort
+       (map (partial follow-route routes))))
+
+(defn find-crash
+  [cars]
+  (->> cars
+       (map first)
+       frequencies
+       (filter (comp (partial < 1) second))
+       first))
+
+(defn part-a
+  [input]
+  (let [[routes cars] (parse-instructions input)]
+    (->> cars
+         (iterate (partial tick routes))
+         (drop-while (comp not find-crash))
+         first
+         find-crash
+         first
+         reverse)))
 

@@ -15,8 +15,10 @@
    "\\-+-/  \\-+--/"
    "  \\------/  "])
 
-(def pp (dut/parse-instructions sample-input))
+(deftest part-a-sample-test
+  (is (= [7 3] (dut/part-a sample-input))))
 
 
-(first pp)
-(second pp)
+(deftest part-a-test
+  (is (= [0 0] (dut/part-a input))))
+
