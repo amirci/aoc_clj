@@ -39,7 +39,10 @@
        (map (fn [[k v]] [k (count v)]))))
 
 (defn remove-infinite
-  [as1 as2]
+  [areas [min-x min-y max-x max-y]]
+  (let [[min-x min-y max-x max-y] [(dec min-x) (dec min-y) (inc max-x) (inc max-y)]]
+
+    )
   (filter (set as2) as1))
 
 (defn calc-boundaries
@@ -60,9 +63,8 @@
 (defn part-a
   [input]
   (let [boundaries (calc-boundaries input)
-        areas (calc-areas input boundaries)
-        areas* (calc-areas input (inc-boundaries boundaries))]
-    (->> (remove-infinite areas areas*)
+        areas (calc-areas input boundaries)]
+    (->> (remove-infinite areas boundaries)
          (apply max-key second)
          second)))
 
