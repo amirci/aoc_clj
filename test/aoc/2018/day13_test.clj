@@ -2,7 +2,7 @@
   (:require [clojure.test :refer :all]
             [aoc.2018.day13 :as dut]))
 
-(def input 
+(def input
   (->> "resources/2018/day13.input.txt"
        slurp
        clojure.string/split-lines))
@@ -19,6 +19,6 @@
   (is (= [7 3] (dut/part-a sample-input))))
 
 
-(deftest part-a-test
-  (is (= [0 0] (dut/part-a input))))
+;(deftest part-a-test
+;  (is (= [0 0] (dut/part-a input))))
 

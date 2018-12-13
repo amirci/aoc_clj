@@ -77,33 +77,29 @@
     [{} {}]
     (map-indexed vector lines)))
 
-(defn follow-route
-  [routes [pos cart]]
-  (let [f (routes pos)]
-    (f pos cart)))
-
 (defn tick
   [routes carts]
+  (println ">>> carts" carts)
   (->> carts
        sort
-       (map (partial follow-route routes))))
-
-(defn find-crash
-  [cars]
-  (->> cars
-       (map first)
-       frequencies
-       (filter (comp (partial < 1) second))
-       first))
+       (reduce
+         (fn [new-carts [pos cart]]
+           (let [f (routes pos)
+                 new-carts (dissoc new-carts pos)
+                 [new-pos new-cart] (f pos cart)]
+             (if (new-carts new-pos)
+               (reduced {:crash new-pos})
+               (assoc new-carts new-pos new-cart))))
+         carts)))
 
 (defn part-a
   [input]
-  (let [[routes cars] (parse-instructions input)]
-    (->> cars
+  (let [[routes carts] (parse-instructions input)]
+    (->> carts
          (iterate (partial tick routes))
-         (drop-while (comp not find-crash))
+         ;(take 3))))
+         (drop-while (comp not :crash))
          first
-         find-crash
-         first
+         :crash
          reverse)))
 
