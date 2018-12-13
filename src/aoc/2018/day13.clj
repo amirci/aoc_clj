@@ -101,3 +101,39 @@
          :crash
          reverse)))
 
+;; Part B
+
+(defn tick-remove-crash
+  [routes carts]
+  (println ">>> COUNT" (count carts))
+  (->> carts
+       sort
+       (reduce
+         (fn [new-carts [pos cart]]
+           (let [f (routes pos)
+                 new-carts (dissoc new-carts pos)
+                 [new-pos new-cart] (f pos cart)]
+             (if (new-carts new-pos)
+               (dissoc new-carts new-pos)
+               (assoc new-carts new-pos new-cart))))
+         carts)))
+
+(defn part-b
+  [input]
+  (let [[routes carts] (parse-instructions input)]
+    (->> carts
+         (iterate (partial tick-remove-crash routes))
+         ;(drop-while (comp (partial < 1) count))
+         ;(drop 338)
+         (drop 337)
+         (take 2)
+         )))
+         ;count)))
+         ;first
+         ;keys
+         ;first
+         ;reverse
+         ;)))
+
+
+
