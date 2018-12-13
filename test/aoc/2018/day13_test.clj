@@ -31,9 +31,9 @@
    "  |   ^"
    "  \\<->/"])
 
-;(deftest part-b-sample-test
-;  (is (= [6 4] (dut/part-b sample-input-b))))
+(deftest part-b-sample-test
+  (is (= [6 4] (dut/part-b sample-input-b))))
 
 (deftest part-b-test
-  (is (= [0 0] (dut/part-b input))))
+  (is (= [16 73] (dut/part-b input))))
 

@@ -103,37 +103,38 @@
 
 ;; Part B
 
-(defn tick-remove-crash
+(defn remove-crashes
+  [routes [pending new-carts]]
+  (let [pos (first pending)
+        pending (disj pending pos)
+        f (routes pos)
+        cart (new-carts pos)
+        new-carts (dissoc new-carts pos)
+        [new-pos new-cart] (f pos cart)]
+
+    (if (new-carts new-pos)
+      [(disj pending new-pos) (dissoc new-carts new-pos)]
+      [pending (assoc new-carts new-pos new-cart)])))
+
+(defn tick-remove-crashes
   [routes carts]
-  (println ">>> COUNT" (count carts))
-  (->> carts
-       sort
-       (reduce
-         (fn [new-carts [pos cart]]
-           (let [f (routes pos)
-                 new-carts (dissoc new-carts pos)
-                 [new-pos new-cart] (f pos cart)]
-             (if (new-carts new-pos)
-               (dissoc new-carts new-pos)
-               (assoc new-carts new-pos new-cart))))
-         carts)))
+  (let [pending (apply sorted-set (keys carts))]
+    (->> [pending carts]
+         (iterate (partial remove-crashes routes))
+         (drop-while (comp seq first))
+         first
+         second)))
 
 (defn part-b
   [input]
   (let [[routes carts] (parse-instructions input)]
     (->> carts
-         (iterate (partial tick-remove-crash routes))
-         ;(drop-while (comp (partial < 1) count))
-         ;(drop 338)
-         (drop 337)
-         (take 2)
-         )))
-         ;count)))
-         ;first
-         ;keys
-         ;first
-         ;reverse
-         ;)))
+         (iterate (partial tick-remove-crashes routes))
+         (drop-while (comp (partial < 1) count))
+         first
+         keys
+         first
+         reverse)))
 
 
 
