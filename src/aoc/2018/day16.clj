@@ -54,4 +54,54 @@
        (filter #(<= 3 (count %)))
        count))
 
+;; part B
+(defn count-matching?
+  [n [k fns]]
+  (= n (count fns)))
+
+(defn discover-ops
+  [pending]
+  (->> pending
+       (filter (partial count-matching? 1))
+       (map (fn [[op fns]] [op (first fns)]))
+       set
+       (into {})))
+
+(defn update-known-ops
+  [found pending]
+  (let [known (set (vals found))]
+    (reduce
+      (fn [pending k] (update pending k (partial remove known)))
+      pending
+      (keys pending))))
+
+(defn remove-discovered
+  [found pending]
+  (let [known (set (keys found))]
+    (reduce
+      (fn [pending k] (if (known k) (dissoc pending k) pending))
+      pending
+      (keys pending))))
+
+(defn discover-iteration
+  [[found pending]]
+  (let [new-found   (discover-ops pending)
+        new-pending (->> pending
+                         (remove-discovered new-found)
+                         (update-known-ops new-found))]
+    [(merge found new-found) new-pending]))
+
+(defn sample->matches 
+  [[before op after]]
+  [(first op) (find-matching-ops before op after)])
+
+(defn part-b
+  [input]
+  (let [samples (->> input (map sample->matches) (into {}))]
+    (->> [{} samples]
+         (iterate discover-iteration)
+         (drop-while (comp seq second))
+         ffirst)))
+
+
 

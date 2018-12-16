@@ -14,8 +14,14 @@
         (partition 3)
         (map dut/parse-before-after))))
 
+;3047
+(def program
+  (->> "resources/2018/day16.input.txt"
+       slurp
+       clojure.string/split-lines
+       (drop 3046)))
 
 (deftest part-a-test
   (is (= 521 (dut/part-a input))))
 
-
+(take 2 program)
