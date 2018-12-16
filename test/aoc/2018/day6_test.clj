@@ -30,10 +30,8 @@
   (is (= 3604
          (dut/part-a input))))
 
-(defn mhd-to-pts
- [pt pts]
- (->> pts
-      (map (partial dut/man-dist pt))
-      (apply +)))
+(deftest part-b-sample-test
+  (is (= 16 (dut/part-b sample-input 32))))
 
-(mhd-to-pts [4 3] sample-input)
+(deftest part-b-test
+  (is (= 46563 (dut/part-b input 10000))))

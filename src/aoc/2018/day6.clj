@@ -2,13 +2,6 @@
   (:require 
     [clojure.string :as str]))
 
-
-(defn ->map-pts
-  [lines]
-  (->> lines
-       (map #(read-string (str "[[" %"] #{}]")))
-       (into {})))
-
 (defn man-dist*
   [[a b] [c d]]
   (+
@@ -16,7 +9,6 @@
     (java.lang.Math/abs (- b d))))
 
 (def man-dist (memoize man-dist*))
-
 
 (defn all-points-in 
   [[min-x min-y max-x max-y]]
@@ -86,7 +78,25 @@
         areas (calc-areas input boundaries)]
     (->> (remove-infinite areas boundaries)
          (map (comp count second))
-         (apply max)
-         )))
+         (apply max))))
 
+;; Part B
 
+(defn mhd-to-pts
+ [pt pts]
+ (->> pts
+      (map (partial man-dist pt))
+      (apply +)))
+
+(defn part-b
+  [input threshold]
+  (->> input
+       calc-boundaries
+       all-points-in
+       (reduce
+         (fn [total query-pt]
+           (let [mhd-sum (mhd-to-pts query-pt input)]
+             (if (< mhd-sum threshold)
+               (inc total)
+               total)))
+         0)))
