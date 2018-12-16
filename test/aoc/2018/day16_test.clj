@@ -19,9 +19,11 @@
   (->> "resources/2018/day16.input.txt"
        slurp
        clojure.string/split-lines
-       (drop 3046)))
+       (drop 3046)
+       (map #(read-string (str "[" % "]")))))
 
 (deftest part-a-test
   (is (= 521 (dut/part-a input))))
 
-(take 2 program)
+(deftest part-b-test
+  (is (= 594 (dut/part-b input program))))

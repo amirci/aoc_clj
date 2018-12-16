@@ -95,13 +95,25 @@
   [[before op after]]
   [(first op) (find-matching-ops before op after)])
 
-(defn part-b
+(defn deduce-op-map
   [input]
-  (let [samples (->> input (map sample->matches) (into {}))]
-    (->> [{} samples]
-         (iterate discover-iteration)
-         (drop-while (comp seq second))
-         ffirst)))
+  (->> input 
+       (map sample->matches) 
+       (into {})
+       (vector {})
+       (iterate discover-iteration)
+       (drop-while (comp seq second))
+       ffirst))
+
+(defn part-b
+  [input program]
+  (let [op-map (deduce-op-map input)]
+    (->> program
+         (reduce
+           (fn [regs [op a b c]]
+             (let [f (op-map op)] (f regs [a b c])))
+           [0 0 0 0])
+         first)))
 
 
 
