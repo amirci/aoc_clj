@@ -3,12 +3,12 @@
 
 ; 3044 line number for instructions
 
-(def register get)
+(def register nth)
 (defn immediate [_ a] a)
 
 (defn calc-op
   [op f regs [a b c :as params]]
-  (assoc regs c (op (regs a) (f2 regs b))))
+  (assoc regs c (op (regs a) (f regs b))))
 
 (def addr (partial calc-op + register))
 (def addi (partial calc-op + immediate))
@@ -26,11 +26,32 @@
   (->> (if (op? (f1 regs a) (f2 regs b)) 1 0)
        (assoc regs c)))
 
-(defn gtir (partial bool-op > immediate register))
-(defn gtri (partial bool-op > register immediate))
-(defn gtrr (partial bool-op > register register))
-(defn eqir (partial bool-op = immediate register))
-(defn eqri (partial bool-op = register immediate))
-(defn eqrr (partial bool-op = register register))
- 
+(def gtir (partial bool-op > immediate register))
+(def gtri (partial bool-op > register immediate))
+(def gtrr (partial bool-op > register register))
+(def eqir (partial bool-op = immediate register))
+(def eqri (partial bool-op = register immediate))
+(def eqrr (partial bool-op = register register))
+
+(defn parse-before-after
+  [[before instruction after]]
+  (map read-string [before (str "[" instruction"]") after]))
+
+
+(def all-ops 
+  [addi addr muli mulr bani banr bori borr
+   setr seti gtir gtri gtrr eqir eqri eqrr])
+
+(defn find-matching-ops 
+  [regs [op a b c :as params] actual]
+  (->> all-ops
+       (filter #(= actual (% regs [a b c])))))
+
+(defn part-a
+  [input]
+  (->> input
+       (map #(apply find-matching-ops %))
+       (filter #(<= 3 (count %)))
+       count))
+
 
