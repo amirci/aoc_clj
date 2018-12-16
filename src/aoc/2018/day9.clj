@@ -31,11 +31,10 @@
   {:player 1
    :scores (->> (range 1 (inc total-players)) (mapv #(vector % 0)) (into {}))
    :current 0
-   :total total-marbles
    :marble-circle (empty-marble-circle) 
    :next-marble 1})
 
-(defn find-prize
+(defn find-prize-idx
   "Finds ccw 7 position"
   [current circle]
   (let [current (- current 7)]
@@ -48,12 +47,13 @@
   (mod prize (dec (count circle))))
 
 (defn play-turn-23
-  [{:keys [player scores total next-marble marble-circle current] :as game}]
-  (let [prize (find-prize current marble-circle)]
+  [{:keys [player scores next-marble marble-circle current] :as game}]
+  (let [prize-idx (find-prize-idx current marble-circle)
+        prize     (.get marble-circle prize-idx)]
     (-> game
         (update :scores        update player + next-marble prize)
-        (update :marble-circle remove-marble prize)
-        (assoc  :current       (find-after-prize prize marble-circle)))))
+        (update :marble-circle remove-marble prize-idx)
+        (assoc  :current       (find-after-prize prize-idx marble-circle)))))
 
 (defn play-turn-regular
   [{:keys [next-marble marble-circle current] :as game}]

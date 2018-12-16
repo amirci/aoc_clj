@@ -48,20 +48,23 @@
 
 
 (deftest sample-games-test
-  ;(is (= 29   (dut/part-a 9    25)))
+  ;9 players; last marble is worth 25 points
+  (is (= 32 (dut/part-a 9 25)))
   ;9 players; last marble is worth 48 points
-  (is (= 63 (dut/part-a 9 48))
+  (is (= 63 (dut/part-a 9 48)))
   ;1 player; last marble is worth 48 points
-  (is (= 95 (dut/part-a 1 48))))
+  (is (= 95 (dut/part-a 1 48)))
   ;10 players; last marble is worth 1618 points: high score is 8317
-  ;(is (= 8317 (dut/part-a 10 1618))))
+  (is (= 8317 (dut/part-a 10 1618)))
+  ;17 players; last marble is worth 1104 points: high score is 2764
+  (is (= 2764 (dut/part-a 17 1104)))
+  ;21 players; last marble is worth 6111 points: high score is 54718
+  (is (= 54718 (dut/part-a 21 6111)))
+  ;30 players; last marble is worth 5807 points: high score is 37305
+  (is (= 37305 (dut/part-a 30 5807)))
   ;13 players; last marble is worth 7999 points: high score is 146373
-  ;(is (= 146373 (dut/part-a 13 7999))))
-
-
-;17 players; last marble is worth 1104 points: high score is 2764
-;21 players; last marble is worth 6111 points: high score is 54718
-;30 players; last marble is worth 5807 points: high score is 37305
+  (is (= 146373 (dut/part-a 13 7999)))
+  )
 
 (deftest part-a-test
   (is (= 1 1))); (dut/part-a 462 71938))))
