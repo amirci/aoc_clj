@@ -44,5 +44,24 @@
     (is (= {:player 6 :current 6 :next-marble 24
             :marble-circle [0 16 8 17 4 18 19 2 20 10 21 5 22 11 1 12 6 13 3 14 7 15]} 
            ;[5]  0 16  8 17  4 18(19) 2 20 10 21  5 22 11  1 12  6 13  3 14  7 15
-           (play-some-turns 23))))
-  )
+           (play-some-turns 23)))))
+
+
+(deftest sample-games-test
+  ;(is (= 29   (dut/part-a 9    25)))
+  ;9 players; last marble is worth 48 points
+  (is (= 63 (dut/part-a 9 48))
+  ;1 player; last marble is worth 48 points
+  (is (= 95 (dut/part-a 1 48))))
+  ;10 players; last marble is worth 1618 points: high score is 8317
+  ;(is (= 8317 (dut/part-a 10 1618))))
+  ;13 players; last marble is worth 7999 points: high score is 146373
+  ;(is (= 146373 (dut/part-a 13 7999))))
+
+
+;17 players; last marble is worth 1104 points: high score is 2764
+;21 players; last marble is worth 6111 points: high score is 54718
+;30 players; last marble is worth 5807 points: high score is 37305
+
+(deftest part-a-test
+  (is (= 1 1))); (dut/part-a 462 71938))))

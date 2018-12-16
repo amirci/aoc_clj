@@ -69,3 +69,14 @@
         f
         (update :player        next-player scores)
         (update :next-marble   calc-next-marble))))
+
+;; Calc high score
+(defn part-a
+  [players last-marble]
+  (->> (init-game players last-marble)
+       (iterate play-turn)
+       (drop last-marble)
+       first
+       :scores
+       vals
+       (apply max)))
