@@ -5,26 +5,35 @@
 (def input
   (-> "resources/2018/day6.input.txt"
       slurp
-      (clojure.string/replace #"[,]" " ")
-      clojure.string/split-lines))
+      clojure.string/split-lines
+      (->>
+        (map #(read-string (str "[" % "]"))))))
 
-(def sample-input
-  (->> [[1 1] [1 6] [8 3] [3 4] [5 5] [8 9]]
-       (map #(vector % #{}))
-       (into {})))
+(def sample-input [[1 1] [1 6] [8 3] [3 4] [5 5] [8 9]])
 
-(deftest min-dist-test
-  (is (= [1 1]
-         (dut/min-dist [0 0] (keys sample-input)))))
+(deftest calc-boundaries-test
+  (is (= [1 1 8 9] (dut/calc-boundaries sample-input))))
 
-(deftest min-dist-test-dont-count
-  (is
-    (= nil
-       (dut/min-dist [5 0] (keys sample-input)))))
+(deftest all-points-test
+  (is (= #{[1 1] [2 1] [2 2] [1 2]} (set (dut/all-points-in [1 1 2 2])))))
+
+(deftest closest-point-test
+  (is (= [1 1] (dut/closest-point sample-input [0 0]))))
+
+(deftest closest-point-is-nil-test
+  (is (= nil (dut/closest-point sample-input [5 0]))))
 
 (deftest part-a-sample-test
   (is (= 17 (dut/part-a sample-input))))
 
-;(deftest part-a-test
-;  (is (= 5 (dut/part-a (dut/->map-pts input) 400 400))))
+(deftest part-a-test
+  (is (= 3604
+         (dut/part-a input))))
 
+(defn mhd-to-pts
+ [pt pts]
+ (->> pts
+      (map (partial dut/man-dist pt))
+      (apply +)))
+
+(mhd-to-pts [4 3] sample-input)
