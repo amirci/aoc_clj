@@ -30,17 +30,34 @@
       parse-clay))
 
 (defn print-clay
-  [input]
-  (let [clay (dut/calc-clay input)
-        [min-x min-y max-x max-y :as bb] (dut/calc-boundaries clay)]
-    (println bb)
-    (doseq [y (range min-y (inc max-y))]
+  [clay water]
+  (let [[min-x min-y max-x max-y :as bb] (dut/calc-boundaries clay)]
+    (doseq [y (range 0 (inc max-y))]
       (doseq [x (range min-x (inc max-x))]
-        (if (clay [x y])
-          (print "#")
-          (print ".")))
+        (cond
+          (clay [x y])  (print "#")
+          (water [x y]) (print "|")
+          :else         (print ".")))
       (println))))
 
-;*e
-;(vec (filter #(clojure.string/includes? % "93") (pp2 input)))
+(def sample-input-clay (dut/calc-clay sample-input))
 
+(->> [sample-input-clay #{} [[500 1]]]
+     (iterate dut/flood2)
+     (drop 10)
+     first
+     rest
+     )
+
+
+     (take 10)
+     (map last)
+     (map println))
+
+(print-clay
+  sample-input-clay
+  (->> [sample-input-clay #{} [[500 1]]]
+       (iterate dut/flood2)
+       (drop 34)
+       first
+       second))
