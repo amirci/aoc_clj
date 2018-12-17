@@ -49,11 +49,16 @@
 (defn play-turn-23
   [{:keys [player scores next-marble marble-circle current] :as game}]
   (let [prize-idx (find-prize-idx current marble-circle)
-        prize     (.get marble-circle prize-idx)]
+        prize     (.get marble-circle prize-idx)
+        current*  (find-after-prize prize-idx marble-circle)]
+    (when (neg? (- current 7))
+      (println ">>>> Part 23" current "-" (count marble-circle))
+      (println "____ -7" prize-idx ")))) new current" current*)
+      )
     (-> game
         (update :scores        update player + next-marble prize)
         (update :marble-circle remove-marble prize-idx)
-        (assoc  :current       (find-after-prize prize-idx marble-circle)))))
+        (assoc  :current       current*))))
 
 (defn play-turn-regular
   [{:keys [next-marble marble-circle current] :as game}]

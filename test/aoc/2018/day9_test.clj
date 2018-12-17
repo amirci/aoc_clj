@@ -63,8 +63,7 @@
   ;30 players; last marble is worth 5807 points: high score is 37305
   (is (= 37305 (dut/part-a 30 5807)))
   ;13 players; last marble is worth 7999 points: high score is 146373
-  (is (= 146373 (dut/part-a 13 7999)))
-  )
+  (is (= 146373 (dut/part-a 13 7999))))
 
 (deftest part-a-test
-  (is (= 1 1))); (dut/part-a 462 71938))))
+  (is (= 398371 (dut/part-a 462 71938))))
