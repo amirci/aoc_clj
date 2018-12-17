@@ -24,14 +24,16 @@
   (.remove circle (int pos))
   circle)
 
-(defn empty-marble-circle [] (insert-marble (java.util.ArrayList.) 0 0))
+(defn empty-marble-circle
+  [size]
+  (insert-marble (java.util.ArrayList. size) 0 0))
 
 (defn init-game
   [total-players total-marbles]
   {:player 1
    :scores (->> (range 1 (inc total-players)) (mapv #(vector % 0)) (into {}))
    :current 0
-   :marble-circle (empty-marble-circle) 
+   :marble-circle (empty-marble-circle total-marbles) 
    :next-marble 1})
 
 (defn find-prize-idx
@@ -51,10 +53,6 @@
   (let [prize-idx (find-prize-idx current marble-circle)
         prize     (.get marble-circle prize-idx)
         current*  (find-after-prize prize-idx marble-circle)]
-    (when (neg? (- current 7))
-      (println ">>>> Part 23" current "-" (count marble-circle))
-      (println "____ -7" prize-idx ")))) new current" current*)
-      )
     (-> game
         (update :scores        update player + next-marble prize)
         (update :marble-circle remove-marble prize-idx)
@@ -69,6 +67,8 @@
 
 (defn play-turn
   [{:keys [next-marble scores] :as game}]
+  (when (zero? (mod next-marble 500000))
+    (println ">>> Marble" next-marble))
   (let [f (if (zero? (mod next-marble 23)) play-turn-23 play-turn-regular)]
     (-> game
         f

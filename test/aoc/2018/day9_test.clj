@@ -67,3 +67,7 @@
 
 (deftest part-a-test
   (is (= 398371 (dut/part-a 462 71938))))
+
+;(deftest part-b-test
+;  (is (= 3212830280 (dut/part-a 462 7193800))))
+
