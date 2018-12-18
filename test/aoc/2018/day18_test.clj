@@ -44,6 +44,7 @@
   (is (= 507755 (dut/part-a 10 input))))
 
 (deftest part-b-test
-  (is (= 1 (dut/part-a 1000000000 input))))
+  (is (= 235080 (dut/part-b 1000000000 input))))
+
 
 

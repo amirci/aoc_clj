@@ -25,7 +25,7 @@
       (and (= acre \#) (or (zero? trees) (zero? lumber))) \.
       :else acre)))
 
-(defn evolve
+(defn evolve*
   [acres]
   (reduce-kv
     (fn [m pos acre]
@@ -35,12 +35,43 @@
     {}
     acres))
 
+(def evolve** (memoize evolve*))
+
+(defn evolve
+  [[i acres]]
+  [(inc i) (evolve** acres)])
+
 (defn part-a
   [minutes acres]
-  (let [{wood \| lumber \#} (->> acres
+  (let [{wood \| lumber \#} (->> [0 acres #{}]
                                  (iterate evolve)
                                  (drop minutes)
                                  first
+                                 second
                                  vals
                                  frequencies)]
     (* wood lumber)))
+
+;; part B
+
+(defn evolve-until-repeat
+  [[_ i acres evolutions]]
+
+  (let [evo (evolve** acres)]
+    (if (evolutions evo)
+      [false i]
+      [true (inc i) evo (conj evolutions evo)])))
+
+(defn find-repetition
+  [acres]
+  (->> [true 0 acres #{}]
+       (iterate evolve-until-repeat)
+       (drop-while first)
+       first
+       second))
+
+(defn part-b
+  [minutes acres]
+  (let [repeat-idx (find-repetition acres)
+        minutes (rem minutes repeat-idx)]
+    (part-a minutes acres)))
