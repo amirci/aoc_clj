@@ -7,7 +7,9 @@
 
 (def input
   (-> "resources/2018/day20.input.txt"
-      slurp))
+      slurp
+      clojure.string/split-lines
+      first))
 
 (defn parse
   [s]
@@ -25,4 +27,11 @@
          (dut/furthest-room "^ESSWWN(E|NNENN(EESS(WNSE|)SSS|WWWSSSSE(SW|NNNE)))$")))
   (is (= 31
          (dut/furthest-room "^WSSEESWWWNW(S|NENNEEEENN(ESSSSW(NWSW|SSEN)|WSWWN(E|WWS(E|SS))))$"))))
+
+(deftest part-a-test
+  (is (= 1
+         (dut/furthest-room input))))
+
+
+(parse "^WWSSWSEENEESSEENWNNNNNWS(SSWWEENN|)WNWNWSWWWNNWNWNWWSESSSEE(NWNSES|)SSWWN(WSWSEESESWWSESSESWSEEESSENEESWSESSENESSWSWWWWNWNENWN(NNWSSWNWWNNNE(SSEWNN|)NNWWWWWNWWWWWSWWNWNEE(EENNWNWSWNWWNNNNESESENENENWWW(SEWN|)N)))$")
 
