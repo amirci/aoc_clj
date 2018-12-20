@@ -21,8 +21,17 @@
  (bind [re-list (sep-end-by1 (sym* \|) (fwd regexp*))]
        (return (apply concat re-list))))
 
+(defn combine-suffixes
+  [xps suffixes]
+  (reduce
+    (fn [xps suffixes]
+
+      )
+    xps 
+    [suffixes])
+  )
 (def regexp-pair 
-  (bind [re move-seq re-list (optional (parens list-of-re))]
+  (bind [re move-seq re-list (many (parens list-of-re))]
         (let [re-list (case (count re-list)
                         0 [[]]
                         1 (conj re-list [])
