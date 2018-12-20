@@ -21,7 +21,7 @@
  (bind [re-list (sep-end-by1 (sym* \|) (fwd regexp*))]
        (return (apply concat re-list))))
 
-(def regexp* 
+(def regexp-pair 
   (bind [re move-seq re-list (optional (parens list-of-re))]
         (let [re-list (case (count re-list)
                         0 [[]]
@@ -30,14 +30,19 @@
               re* (for [l re-list] (concat re l))]
           (return re*))))
 
+(def regexp*
+ (bind [re-list (many1 regexp-pair)]
+       (return (apply concat re-list))))
+
 (def regexp
  (bind [_ (sym* \^) re regexp* _ (sym* \$)]
        (return re)))
 
-;^ENWWW(NEEE|SSE(EE|N))$
+(defn furthest-room
+  [s]
+  (->> s
+       (value regexp)
+       (map count)
+       (apply max)))
 
-(value regexp "^ENWWW$")
-(value regexp "^ENWWW(NEEE|)$")
-(value regexp "^ENWWW(NEEE|SSE)$")
-(value regexp "^ENWWW(NEEE|SSE(EE|N))$")
 
