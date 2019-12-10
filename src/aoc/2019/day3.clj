@@ -3,13 +3,11 @@
 
 (def sum-points (partial map +))
 
-(defn dir->delta
-  [dir]
-  (case dir
-    \R [0 1]
-    \L [0 -1]
-    \U [1 0]
-    \D [-1 0]))
+(def dir->delta
+  {\R [0 1]
+   \L [0 -1]
+   \U [1 0]
+   \D [-1 0]})
 
 (defn dir->pt
   [dir]
@@ -40,16 +38,6 @@
           []
           path))
 
-(defn path-points2
-  [path]
-  (reduce (fn [coll to]
-            (let [from (or (last coll) [0 0])
-                  pt   (dir->pt to)
-                  points (walk-to from to)]
-              (concat coll points)))
-          []
-          path))
-
 (defn mhd
   [pt]
   (->> pt
@@ -63,4 +51,21 @@
        (apply clojure.set/intersection)
        (map mhd)
        (apply min)))
+
+(defn steps-until
+  [p coll]
+  (->> coll
+       (take-while (partial not= p))
+       count
+       inc))
+
+(defn fewest-combined-steps
+  [wire1-path wire2-path]
+  (let [[pts1 pts2] (map path-points [wire1-path wire2-path])
+        intersect (clojure.set/intersection (set pts1) (set pts2))]
+    (apply min
+           (for [p intersect]
+               (->> [pts1 pts2]
+                    (map (partial steps-until p))
+                    (apply +))))))
 

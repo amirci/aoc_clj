@@ -17,11 +17,7 @@
           [1 8] [2 8] [3 8] [4 8] [5 8]
           [5 7] [5 6] [5 5] [5 4] [5 3]
           [4 3] [3 3] [2 3]]
-         (sut/path-points ["R8" "U5" "L5" "D3"])
-         )))
-
-(sut/path-points ["U7" "R6" "D4" "L4"])
-(sut/path-points ["R8" "U5" "L5" "D3"])
+         (sut/path-points ["R8" "U5" "L5" "D3"]))))
 
 (deftest intersection-test
   (is (= 6
@@ -31,9 +27,20 @@
   (is (= 159
          (sut/closest-intersection
           ["R75" "D30" "R83" "U83" "L12" "D49" "R71" "U7" "L72"]
-          ["U62" "R66" "U55" "R34" "D71" "R55" "D58" "R83"]
-          ))))
+          ["U62" "R66" "U55" "R34" "D71" "R55" "D58" "R83"]))))
 
 (deftest part-a-test
-  (is (= 6
+  (is (= 557
          (apply sut/closest-intersection input-paths))))
+
+
+(deftest part-b-test
+  (is (= 30 (sut/fewest-combined-steps
+              ["U7" "R6" "D4" "L4"]
+              ["R8" "U5" "L5" "D3"])))
+  (is (= 610
+         (sut/fewest-combined-steps
+           ["R75" "D30" "R83" "U83" "L12" "D49" "R71" "U7" "L72"]
+           ["U62" "R66" "U55" "R34" "D71" "R55" "D58" "R83"])))
+  (is (= 56410
+         (apply sut/fewest-combined-steps input-paths))))
