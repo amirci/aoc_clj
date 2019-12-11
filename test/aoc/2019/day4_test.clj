@@ -18,5 +18,9 @@
 
 (deftest part-a-test
   (is (= 1694
-         (sut/total-valid-pwd input-range)
+         (sut/total-valid-pwd input-range))))
+
+(deftest part-b-test
+  (is (= 1148
+         (sut/total-valid-pwd-2 input-range)
          )))

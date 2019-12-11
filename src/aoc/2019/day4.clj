@@ -11,6 +11,13 @@
       (= d e)
       (= e f)))
 
+(defn has-repeat-digits-2?
+  [s]
+  (->> s
+       (partition-by identity)
+       (filter #(= 2 (count %)))
+       first))
+
 (defn ->digits [n] (map int (seq (str n))))
 
 (defn never-decrease-digits?
@@ -18,15 +25,22 @@
   (apply <= s))
 
 (defn valid-pwd?
-  [n]
-  (let [s (->digits n)]
-    (and
-      (has-6-digits? n)
-      (has-repeat-digits? s)
-      (never-decrease-digits? s))))
+  ([n] (valid-pwd? has-repeat-digits? n))
+  ([repeat? n]
+   (let [s (->digits n)]
+     (and
+       (has-6-digits? n)
+       (repeat? s)
+       (never-decrease-digits? s)))))
 
 (defn total-valid-pwd
   [rng]
   (->> rng
        (filter valid-pwd?)
+       count))
+
+(defn total-valid-pwd-2
+  [rng]
+  (->> rng
+       (filter (partial valid-pwd? has-repeat-digits-2?))
        count))
