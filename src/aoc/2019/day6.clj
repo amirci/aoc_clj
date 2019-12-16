@@ -43,3 +43,27 @@
   (->> orbit-spec
        mk-orbit-tree
        (count-total-deps "COM")))
+
+(defn find-parent
+  [tree node]
+  (->> tree
+       (filter (fn [[k coll]] (some (partial = node) coll)))
+       ffirst))
+
+(defn parents-of
+  [node tree]
+  (->> node
+       (iterate (partial find-parent tree))
+       (take-while seq)
+       reverse))
+
+(defn min-orbit-transfer
+  [spec]
+  (let [tree (mk-orbit-tree spec)]
+    (loop [[y1 & yrst :as you] (parents-of "YOU" tree)
+           [s1 & srst :as san] (parents-of "SAN" tree)]
+      (if (= y1 s1)
+        (recur yrst srst)
+        (->> [you san]
+             (map count)
+             (apply + -2))))))
