@@ -1,5 +1,6 @@
 (ns aoc.2019.day7-test
   (:require
+   [aoc.2019.day5 :as day5]
    [aoc.2019.day7 :as sut]
    [clojure.test :refer [testing]]
    [clojure.test.check.clojure-test :refer [defspec]]
@@ -15,6 +16,8 @@
 (def intcode
   (->> input
        slurp
+       clojure.string/split-lines
+       first
        (format "[%s]")
        edn/read-string))
 
@@ -39,7 +42,26 @@
 
 
 
+(def s1-code [3 26          ;  0: a26 <- read-input
+              1001 26 -4 26 ;  2: a26 = a26 + -4
+              3 27          ;  6: a27 <- read-input 
+              1002 27 2 27  ;  8: a27 = a27 * 2
+              1 27 26 27    ; 12: a27 = a27 + a26
+              4 27          ; 16: ouput <- a27
+              1001 28 -1 28 ; 18: a28 = a28 + -1
+              1005 28 6     ; 22: jump-nz a28 6
+              99            ; 25: halt
+              0 0 5])
 
 
+(def samples-b
+  {139629729 [[9 8 7 6 5] s1-code]
+   18216 [[9 7 8 5 6] [3 52 1001 52 -5 52 3 53 1 52 56 54 1007 54 5 55 1005 55 26 1001 54 -5 54 1105 1 12 1 53 54 53 1008 54 0 55 1001 55 1 55 2 53 55 53 4 53 1001 56 -1 56 1005 56 6 99 0 0 0 0 10]]})
 
 
+(deftest samples-part-b-test
+  (doseq [[expected [cfg code]] samples-b]
+    (is (= expected
+          (sut/thruster-signal-in-loop code cfg)))))
+
+(sut/max-thruster-signal-in-loop intcode)
