@@ -2,22 +2,33 @@
   (:require
    [clojure.math.combinatorics :as combi]
    [clojure.core.async :as async]
+   [taoensso.timbre :as timbre]
    [aoc.2019.day5 :as day5]))
+
+(defn read-blocking-fn
+  ([ch] (read-blocking-fn ch nil))
+  ([ch id]
+   (fn [program]
+     (when id (timbre/debug "AMP" id "WAITING TO READ input"))
+     (let [result (async/<!! ch)]
+       (when-not result
+         (throw (ex-info (str id ": CAN'T READ INPUT! Channel closed!") (assoc program :exception :input-required))))
+       (when id (timbre/debug "AMP" id "READ input" result))
+       result))))
 
 (defn input-queue
   [inputs]
-  (let [ch (async/chan)]
+  (let [ch (async/chan 2)]
     (async/onto-chan ch inputs)
-    (fn [program]
-      (let [result (async/<!! ch)]
-        (when-not result
-          (throw (ex-info "CAN'T READ INPUT! Channel closed!" (assoc program :exception :input-required))))
-        result))))
+    (read-blocking-fn ch)))
 
 (defn run-amplifier
   [program last-output thruster-cfg]
   (let [cfg [thruster-cfg last-output]]
-    (day5/run-program program (input-queue cfg))))
+    (-> program
+        (day5/run-program (input-queue cfg))
+        (get-in [:runtime :outputs])
+        last)))
 
 
 (defn thruster-signal
@@ -47,7 +58,7 @@
 (defn mk-chan
   [n]
   (let [ch (async/chan)]
-    (async/onto-chan ch [n])
+    (async/go (async/>! ch n))
     ch))
 
 (defn update-state
@@ -75,32 +86,54 @@
     {:code-states [] :last-output last-output}
     code-states))
 
-(defn ->state
-  [code phase]
-  (-> (day5/->instruction code 0 [])
-      (assoc :phase phase)))
+;;; async
 
-(defn needs-input?
-  [{:keys [code-states] :as m}]
-  (some :exception code-states))
+(defn write-output-fn
+  [ch id]
+  (fn [program output]
+    (timbre/debug "AMP" id "WRITING output" output)
+    (let [new-program (assoc program :last-output output)]
+      (async/>!! ch output)
+      new-program)))
 
-(defn thruster-signal-in-loop
-  [code inputs]
+(defn run-amplifier-async
+  [id code ch-input ch-output]
 
-  (->> {:code-states (map ->state (repeat 5 code) inputs) :last-output [0]}
-       (iterate run-amplifiers-loop)
-       (drop 1) 
-       (drop-while needs-input?)
-       first
-       :code-states
-       last
-       :runtime
-       :outputs
-       last))
+  (let [input (read-blocking-fn ch-input  id)
+        output (write-output-fn ch-output id)
+        program  (day5/->instruction code input output)
+        last-run (day5/run-program* program)]
+    (async/close! ch-output)
+    (:last-output last-run)))
+
+(defn mk-chan
+  [phase]
+  (let [ch (async/chan 1)]
+    (async/go (async/>! ch phase))
+    ch))
+
+(defn thruster-signal-in-loop-async
+  [code phases]
+
+  (let [[ea ab bc cd de :as chans] (mapv mk-chan phases)
+        pairs (->> (conj chans ea)
+                   (partition 2 1)
+                   (map vector "ABCDE"))]
+
+    (async/go (async/>! ea 0))
+
+    (deref
+      (last
+        (for [[id [in out]] pairs]
+          (future
+            (run-amplifier-async id code in out))))
+      10000 0)))
 
 (defn max-thruster-signal-in-loop
   [program]
 
-  (->> (possible-cfgs-seq (range 5 10))
-       (map #(thruster-signal-in-loop program %))
-       (apply max)))
+  (let [f (partial thruster-signal-in-loop-async program)]
+    (->> (possible-cfgs-seq (range 5 10))
+         (map #(vector % (f %)))
+         (apply max-key second))))
+

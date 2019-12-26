@@ -1,6 +1,7 @@
 (defproject aoc "0.1.0-SNAPSHOT"
   :description "Advent of code in Clojure"
   :dependencies [[clj-time "0.15.0"]
+                 [com.taoensso/timbre "4.10.0"]
                  [digest "1.4.5"]
                  [org.blancas/kern "1.1.0"]
                  [org.clojure/clojure "1.9.0"]

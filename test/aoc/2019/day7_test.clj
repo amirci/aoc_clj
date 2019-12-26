@@ -28,19 +28,17 @@
 
 (deftest part-a-samples
   (doseq [[expected [cfg code]] samples-a]
-    (testing (str "max thruster signal should be " expected " using " cfg)
+    (testing (str "thruster signal should be " expected " using " cfg)
       (is (= expected
              (sut/thruster-signal code cfg))))))
 
 (deftest part-a-samples-with-max
-  (doseq [[expected [cfg code]] (take 2 samples-a )]
+  (doseq [[expected [cfg code]] samples-a]
     (testing (str "max thruster signal should be " expected)
       (is (= [expected cfg] (sut/max-thruster-signal code ))))))
 
 (deftest part-a-test
   (is (= [65464 [0 3 4 2 1]] (sut/max-thruster-signal intcode))))
-
-
 
 (def s1-code [3 26          ;  0: a26 <- read-input
               1001 26 -4 26 ;  2: a26 = a26 + -4
@@ -62,6 +60,13 @@
 (deftest samples-part-b-test
   (doseq [[expected [cfg code]] samples-b]
     (is (= expected
-          (sut/thruster-signal-in-loop code cfg)))))
+          (sut/thruster-signal-in-loop-async code cfg)))))
 
-(sut/max-thruster-signal-in-loop intcode)
+(deftest samples-part-b-max-test
+  (doseq [[expected [cfg code]] samples-b]
+    (is (= [cfg expected]
+           (sut/max-thruster-signal-in-loop code)))))
+
+(deftest part-b-test
+  (is (= [[7 9 5 6 8] 1518124]
+         (sut/max-thruster-signal-in-loop intcode))))

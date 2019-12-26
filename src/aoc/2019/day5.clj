@@ -44,14 +44,12 @@
 
 (defn jump-if
   [old-value test? check target]
-  (println "JUMP IF" check target)
   (if (test? check)
     target
     old-value))
 
 (defn store
   [op memory k v]
-  (println "OP" op ":" k " = " v)
   (assoc memory k v))
 
 (defn store-if
@@ -67,10 +65,10 @@
     input))
 
 (defn write-output
-  [output v]
-  (if (fn? output)
-    (output v)
-    (conj output v)))
+  [{{:keys [outputs]} :runtime :as program} v]
+  (if (fn? outputs)
+    (outputs program v)
+    (update-in program [:runtime :outputs] conj v)))
 
 (defn eval-op 
   [[op p1 p2 dst m1 m2 m3] {{:keys [input memory] :as runtime} :runtime :as program}]
@@ -80,7 +78,7 @@
       \1 (update-in program [:runtime :memory] (partial store "+") dst (+ (v1) (v2)))
       \2 (update-in program [:runtime :memory] (partial store "*") dst (* (v1) (v2)))
       \3 (update-in program [:runtime :memory] (partial store "<-") p1 (read-input input program))
-      \4 (update-in program [:runtime :outputs] write-output (v1))
+      \4 (write-output program (v1))
       \5 (update-in program [:ptr] jump-if non-zero? (v1) (v2))
       \6 (update-in program [:ptr] jump-if zero? (v1) (v2))
       \7 (update-in program [:runtime :memory] store-if < dst (v1) (v2))
@@ -94,14 +92,10 @@
 
 (defn run-instruction
   [{old-ptr :ptr :as program }]
-  (try
-    (let [[op next-ptr] (parse-op program)]
-      (->> program
-           (eval-op op)
-           (update-ptr-if-wasnt-updated op next-ptr old-ptr)))
-    (catch Exception e
-      (println "EXCEPTION! " program)
-      (throw e))))
+  (let [[op next-ptr] (parse-op program)]
+    (->> program
+         (eval-op op)
+         (update-ptr-if-wasnt-updated op next-ptr old-ptr))))
 
 (defn ->instruction
   [code input output] 
