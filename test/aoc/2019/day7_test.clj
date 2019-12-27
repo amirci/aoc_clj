@@ -38,7 +38,8 @@
       (is (= [expected cfg] (sut/max-thruster-signal code ))))))
 
 (deftest part-a-test
-  (is (= [65464 [0 3 4 2 1]] (sut/max-thruster-signal intcode))))
+  (is (= [366376 [2 3 0 4 1]]
+         (sut/max-thruster-signal intcode))))
 
 (def s1-code [3 26          ;  0: a26 <- read-input
               1001 26 -4 26 ;  2: a26 = a26 + -4

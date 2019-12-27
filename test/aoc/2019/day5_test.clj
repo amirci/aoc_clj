@@ -39,7 +39,7 @@
        first))
 
 (deftest part-a-test
-  (is (= 15508323
+  (is (= 6069343 
          (sut/run-program-last-ouput intcode))))
 
 
@@ -77,7 +77,7 @@
 
 
 (deftest part-b-test
-  (is (= [9006327]
+  (is (= [3188550]
          (get-in (sut/run-program intcode 5) [:runtime :outputs]))))
 
 

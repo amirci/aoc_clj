@@ -5,7 +5,7 @@
    [clojure.edn :as edn]
    [clojure.test :as t :refer [deftest is]]))
 
-(def input-range (range 156218 652528))
+(def input-range (range 271973 785961))
 
 
 (deftest valid-pwd-test
@@ -17,10 +17,10 @@
 
 
 (deftest part-a-test
-  (is (= 1694
+  (is (= 925
          (sut/total-valid-pwd input-range))))
 
 (deftest part-b-test
-  (is (= 1148
+  (is (= 607
          (sut/total-valid-pwd-2 input-range)
          )))
