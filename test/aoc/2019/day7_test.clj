@@ -69,5 +69,6 @@
            (sut/max-thruster-signal-in-loop code)))))
 
 (deftest part-b-test
-  (is (= [[7 9 5 6 8] 1518124]
+  (is (= #_[[7 9 5 6 8] 1518124]
+         [[9 5 8 6 7] 21596786]  
          (sut/max-thruster-signal-in-loop intcode))))

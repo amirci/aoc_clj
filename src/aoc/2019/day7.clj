@@ -38,8 +38,6 @@
     0
     settings))
 
-(def cfg-rng (range 5))
-
 (defn possible-cfgs-seq
   [rng]
   (combi/permutations rng))
@@ -54,12 +52,6 @@
           current)))
     [0]
     (possible-cfgs-seq (range 5))))
-
-(defn mk-chan
-  [n]
-  (let [ch (async/chan)]
-    (async/go (async/>! ch n))
-    ch))
 
 (defn update-state
   [state {{:keys [exception outputs memory]} :runtime :as last-run}]
