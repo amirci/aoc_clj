@@ -28,10 +28,11 @@
          (sut/min-layer-total-ones-and-twos message layer-length))))
 
 
-
-
-
-
-
-
-
+(deftest part-b-test
+  (is (= ["**** ***    **  **  ***  "
+          "   * *  *    * *  * *  * "
+          "  *  ***     * *  * ***  "
+          " *   *  *    * **** *  * "
+          "*    *  * *  * *  * *  * "
+          "**** ***   **  *  * ***  "]
+         (sut/decode-msg message width layer-length))))

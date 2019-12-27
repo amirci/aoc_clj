@@ -19,3 +19,19 @@
   (->> (find-layer-with-min-zero msg len)
        ((juxt #(get % \1) #(get % \2)))
        (apply *)))
+
+
+(defn render-pixel
+  [& ps]
+  (first (filter #(not= \2 %) ps)))
+
+(def mk-readable {\1 \*  \0 \ })
+
+(defn decode-msg
+  [msg width len]
+  (->> msg
+       (partition len)
+       (apply map render-pixel)
+       (map mk-readable)
+       (partition width)
+       (map (partial apply str))))
