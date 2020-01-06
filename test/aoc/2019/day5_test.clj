@@ -1,14 +1,11 @@
 (ns aoc.2019.day5-test
-  (:require
-   [aoc.2019.day5 :as sut]
-   [clojure.test :refer [testing]]
-   [clojure.test.check :as tc]
-   [clojure.test.check.clojure-test :refer [defspec]]
-   [clojure.test.check.generators :as g]
-   [clojure.test.check.properties :as prop]
-   [clojure.java.io :as io]
-   [clojure.edn :as edn]
-   [clojure.test :as t :refer [deftest is]]))
+  (:require [aoc.2019.day5 :as sut]
+            [clojure.edn :as edn]
+            [clojure.java.io :as io]
+            [clojure.test :as t :refer [deftest is]]
+            [clojure.test.check.clojure-test :refer [defspec]]
+            [clojure.test.check.generators :as g]
+            [clojure.test.check.properties :as prop]))
 
 (def input (io/resource "2019/day5.input.txt"))
 
@@ -18,25 +15,26 @@
        (format "[%s]")
        edn/read-string))
 
-
 (deftest parse-modifiers-test
   (is (= [\1 \1 \1 \0]
          (sut/parse-modifiers 1101))))
 
+
 (deftest parse-op-test
-  (is (= [[\2 4 3 4 \0 \1 \0] 4]
-         (sut/parse-op {:ptr 0 :runtime {:memory [1002,4,3,4,33]}})))
-  (is (= [[\1 8 6 6 \0 \0 \0] 6]
-         (sut/parse-op {:ptr 2 :runtime {:memory [3 8 1 8 6 6 1100 1 1 225]}}))))
+  (is (= {:op \2 :modifiers [\0 \1 \0] :params [4 3 4]
+          :actual [{:ptr 4} 3 {:ptr 4}]
+          :next 4}
+         (sut/parse-op (sut/->instruction [1002,4,3,4,33]))))
+  (is (= {:op \1 :modifiers [\0 \0 \0] :params [8 6 6]
+          :actual [{:ptr 8} {:ptr 6} {:ptr 6}]
+          :next 6}
+         (-> [3 8 1 8 6 6 1100 1 1 225]
+             sut/->instruction
+             (assoc :ptr 2)
+             sut/parse-op))))
 
 (def program-2 {:ptr 2 :runtime {:memory (assoc intcode 225 1) :input 1 :outputs []}})
 
-
-(def program-3 
-  (->> {:ptr 0 :runtime {:memory intcode :input 1 :outputs []}}
-       (iterate sut/run-instruction)
-       (drop 2)
-       first))
 
 (deftest part-a-test
   (is (= 6069343 
@@ -45,9 +43,9 @@
 
 (defn run-it
   [code input]
-  (get-in
+  (get
     (sut/run-program code input)
-    [:runtime :outputs]))
+    :outputs))
 
 (defspec part-b-sample-1
   100
@@ -78,6 +76,6 @@
 
 (deftest part-b-test
   (is (= [3188550]
-         (get-in (sut/run-program intcode 5) [:runtime :outputs]))))
+         (:outputs (sut/run-program intcode 5)))))
 
 
