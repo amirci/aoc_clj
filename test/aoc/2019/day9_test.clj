@@ -47,3 +47,9 @@
              sut/run-program
              :outputs))))
 
+(deftest part-b-test
+  (is (= [83089]
+         (-> intcode
+             (sut/run-program 2)
+             :outputs))))
+

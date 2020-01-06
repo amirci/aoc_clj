@@ -66,7 +66,7 @@
   (-> (read-address memory (address ptr))
       (not= halt-code)))
 
-(def non-zero? (partial not= 0))
+(def non-zero? (complement zero?))
 
 (defn jump-if
   [old-value test? check target]
