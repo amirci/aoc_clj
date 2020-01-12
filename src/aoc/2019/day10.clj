@@ -4,13 +4,6 @@
   [[a b] [c d]]
   [(- c a) (- d b)])
 
-(defn slope
-  [p1 p2]
-  (let [[d1 d2] (->vec p1 p2)]
-    (if (zero? d1)
-      :infinity
-      (double (/ d2 d1)))) )
-
 (defn square [x] (* x x))
 
 (def sqrt #(java.lang.Math/sqrt %))
@@ -19,13 +12,6 @@
   ([v] (->> v (map square) (apply +) sqrt))
   ([p1 p2] (magnitude (->vec p1 p2))))
 
-(defn collinear?
-  ([[a b] [c d]]
-   {:pre [(and (pos? c) (pos? d))]}
-   (= (/ a c) (/ b d)))
-  ([pt1 pt2 pt3]
-   (collinear? (->vec pt1 pt2) (->vec pt1 pt3))))
-
 (defn dotprod
   "Ax * Bx + Ay * By "
   ([[a b :as v1]
@@ -33,47 +19,36 @@
   ([pt1 pt2 pt3]
    (dotprod (->vec pt1 pt2) (->vec pt1 pt3))))
 
-(defn angle
+(defn angle-cos
   [a b c]
   (/ (dotprod a b c)
      (* (magnitude a b) (magnitude a c))))
 
-(def same-vector? (comp pos? angle))
-
-(defn in-between?
-  "Given all points on the same line, is b between a and c?"
+(defn angle
   [a b c]
-  (< (magnitude a b) (magnitude a c)))
+  (java.lang.Math/acos (angle-cos a b c)))
 
-(defn replace-pt
-  [p1 p2 coll]
-  (-> coll
-      (disj p1)
-      (conj p2)))
-
-
-(defn closest-in-sight
-  [target ast closest-so-far]
-  (let [[c1 c2] (vec closest-so-far)
-        sv1? (and c1 (same-vector? target c1 ast))
-        sv2? (and c2 (same-vector? target c2 ast))]
-    (cond
-      (not c1) #{ast}
-      (and sv1? (in-between? target ast c1)) (replace-pt c1 ast closest-so-far)
-      (and (not c2) (not sv1?)) (conj closest-so-far ast)
-      (and sv2? (in-between? target ast c2)) (replace-pt c2 ast closest-so-far)
-      :else closest-so-far)))
-
+(defn angle-360
+  [[x1 :as a] b [x2 :as c]]
+  (let [ang (float (Math/toDegrees (angle a b c)))]
+    (if (< x2 x1)
+      (+ 180 (- 180 ang))
+      ang)))
 
 (defn in-sight
-  [target coll]
+  [center coll]
   (reduce
-   (fn [m ast]
-     (let [s (slope target ast)
-           found (get m s)]
-       (assoc m s (closest-in-sight target ast found))))
+   (fn [m new-ast]
+     (let [b (assoc center 1 -1)
+           ang (angle-360 center b new-ast)
+           old-ast (get m ang)
+           distance (partial magnitude center)]
+       (assoc m ang
+              (if old-ast
+                (min-key distance new-ast old-ast)
+                new-ast))))
    {}
-   (disj coll target)))
+   (disj coll center)))
 
 (defn direct-lines
   [asteroids]
@@ -89,6 +64,40 @@
   [asteroids]
   (->> asteroids
        direct-lines
-       (map (fn [[pt m]]
-              [pt (apply + (map count (vals m)))]))
+       (map (juxt first (comp count second)))
        (apply max-key second)))
+
+
+; Part b
+(defn sort-by-distance-to
+  [center]
+  (partial sort-by (partial magnitude center)))
+
+(defn same-angle-from
+  [[a b :as center]]
+  (partial angle-360 center [a -1]))
+
+(defn in-full-sight
+  [center asteroids]
+  (->> (disj asteroids center)
+       (group-by (same-angle-from center))
+       (map #(update % 1 (sort-by-distance-to center)))
+       (into (sorted-map))))
+
+(defn vaporize-asteroid
+  [[vaporized pending] [ang [target & rst]]]
+  [(conj vaporized target)
+   (cond-> pending
+     (seq rst) (assoc ang rst))])
+
+(defn vaporize-round
+  [pending]
+  (reduce vaporize-asteroid [[] (sorted-map)] pending))
+
+(defn vaporize-seq
+  [pending]
+  (let [[vaporized pending] (vaporize-round pending)]
+    (lazy-seq (concat vaporized (vaporize-seq pending)))))
+
+(def vaporize-all (comp vaporize-seq in-full-sight))
+
