@@ -26,12 +26,12 @@
 (deftest part-a-sample-test
   (is (= 17 (dut/part-a sample-input))))
 
-(deftest part-a-test
+(deftest ^:slow part-a-test
   (is (= 3604
          (dut/part-a input))))
 
 (deftest part-b-sample-test
   (is (= 16 (dut/part-b sample-input 32))))
 
-(deftest part-b-test
+(deftest ^:slow part-b-test
   (is (= 46563 (dut/part-b input 10000))))

@@ -22,7 +22,7 @@
   (is (= 4
          (dut/total-overlap part-a-sample-input))))
 
-(deftest part-a-test
+(deftest ^:slow part-a-test
   (is (= 113716 
          (dut/total-overlap input))))
 
@@ -30,7 +30,7 @@
   (is (= 3
          (dut/no-overlaps part-a-sample-input))))
 
-(deftest part-b-test
+(deftest ^:slow part-b-test
   (is (= 742 
          (dut/no-overlaps input))))
 

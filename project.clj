@@ -1,5 +1,8 @@
 (defproject aoc "0.1.0-SNAPSHOT"
   :description "Advent of code in Clojure"
+  :test-selectors {:default (complement :slow)
+                   :slow :slow
+                   :all (constantly true)}
   :dependencies [[clj-time "0.15.0"]
                  [com.taoensso/timbre "4.10.0"]
                  [digest "1.4.5"]

@@ -13,7 +13,7 @@
 (deftest part-a-sample-test
   (is (= 10 (dut/part-a "dabAcCaCBAcCcaDA"))))
 
-(deftest part-a-test
+(deftest ^:slow part-a-test
   (is (= 11720
          (dut/part-a input))))
 
@@ -22,7 +22,7 @@
          (dut/part-b component))))
 
 
-(deftest part-b-test
+(deftest ^:slow part-b-test
   (is (= 4956
          (dut/part-b input))))
 

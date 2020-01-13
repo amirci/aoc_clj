@@ -34,7 +34,7 @@
          (apply sut/closest-intersection input-paths))))
 
 
-(deftest part-b-test
+(deftest ^:slow part-b-test
   (is (= 30 (sut/fewest-combined-steps
               ["U7" "R6" "D4" "L4"]
               ["R8" "U5" "L5" "D3"])))

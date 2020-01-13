@@ -3,7 +3,7 @@
             [aoc.2017.day5 :refer :all]))
 
 
-(deftest part-a
+(deftest ^:slow part-a
   (->> "resources/2017/day5.input.txt"
        slurp
        clojure.string/split-lines
@@ -11,7 +11,7 @@
        (= 318883)
        is))
 
-(deftest part-b
+(deftest ^:slow part-b
   (->> "resources/2017/day5.input.txt"
        slurp
        clojure.string/split-lines

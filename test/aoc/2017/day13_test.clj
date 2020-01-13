@@ -7,9 +7,9 @@
       slurp
       clojure.string/split-lines))
 
-(deftest part-a
+(deftest ^:slow part-a
   (is (= 1876 (trip-severity input))))
 
-(deftest part-b
+(deftest ^:slow part-b
   (is (= 3964778 (safe-trip-delay input))))
 

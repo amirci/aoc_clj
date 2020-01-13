@@ -26,18 +26,18 @@
    54321 [[0 1 2 3 4] [3 23 3 24 1002 24 10 24 1002 23 -1 23 101 5 23 23 1 24 23 23 4 23 99 0 0]]
    65210 [[1 0 4 3 2] [3 31 3 32 1002 32 10 32 1001 31 -2 31 1007 31 0 33 1002 33 7 33 1 33 31 31 1 32 31 31 4 31 99 0 0 0]]})
 
-(deftest part-a-samples
+(deftest ^:slow part-a-samples
   (doseq [[expected [cfg code]] samples-a]
     (testing (str "thruster signal should be " expected " using " cfg)
       (is (= expected
              (sut/thruster-signal code cfg))))))
 
-(deftest part-a-samples-with-max
+(deftest ^:slow part-a-samples-with-max
   (doseq [[expected [cfg code]] samples-a]
     (testing (str "max thruster signal should be " expected)
       (is (= [expected cfg] (sut/max-thruster-signal code ))))))
 
-(deftest part-a-test
+(deftest ^:slow part-a-test
   (is (= [366376 [2 3 0 4 1]]
          (sut/max-thruster-signal intcode))))
 
@@ -58,17 +58,16 @@
    18216 [[9 7 8 5 6] [3 52 1001 52 -5 52 3 53 1 52 56 54 1007 54 5 55 1005 55 26 1001 54 -5 54 1105 1 12 1 53 54 53 1008 54 0 55 1001 55 1 55 2 53 55 53 4 53 1001 56 -1 56 1005 56 6 99 0 0 0 0 10]]})
 
 
-(deftest samples-part-b-test
+(deftest ^:slow samples-part-b-test
   (doseq [[expected [cfg code]] samples-b]
     (is (= expected
           (sut/thruster-signal-in-loop-async code cfg)))))
 
-(deftest samples-part-b-max-test
+#_(deftest samples-part-b-max-test
   (doseq [[expected [cfg code]] samples-b]
     (is (= [cfg expected]
            (sut/max-thruster-signal-in-loop code)))))
 
-(deftest part-b-test
-  (is (= #_[[7 9 5 6 8] 1518124]
-         [[9 5 8 6 7] 21596786]  
+(deftest ^:slow part-b-test
+  (is (= [[9 5 8 6 7] 21596786]  
          (sut/max-thruster-signal-in-loop intcode))))
