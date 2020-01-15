@@ -2,6 +2,8 @@
   (:require [aoc.2019.day10 :as sut]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
+            [quil.core :as q]
+            [quil.middleware :as m]
             [clojure.test :as t :refer [deftest is testing]]))
 
 (def asteroid? (partial not= \.))
@@ -162,3 +164,61 @@
   (is (= [17 7]
          (first (drop 199 (sut/vaporize-all [29 28] asteroids))))))
 
+(def factor 20)
+
+(def width (- factor 2))
+
+(def half (/ width 2))
+
+(defn setup []
+  (q/frame-rate 4)
+  (q/stroke 0)
+  (q/text "Loading..." 800 100)
+  {:pending (sut/vaporize-all [29 28] asteroids)
+   :prev #{} :angle 0
+   :roids asteroids :laser [29 28] :total 0})
+
+(defn next-asteroid
+  [{:keys [total laser] [fst & rst] :pending :as state }]
+  (if (<=  total 200)
+    (-> state
+        (assoc  :angle   (Math/toRadians (sut/angle-360 laser [29 -1] fst)))
+        (update :total   inc)
+        (update :prev    conj fst)
+        (assoc  :pending rst))
+    state))
+
+(defn draw
+  [{:keys [angle roids laser pending prev total]}]
+  (q/background 255)
+  (q/fill 100 200 255)
+  (q/text (str "Asteroid: " (first pending)) 800 100)
+  (q/text (str "Total: " total) 800 120)
+  (doseq [[i j :as ast] roids]
+    (q/fill 220 200 255)
+    (let [[x y] (map #(+ (* % factor) 2 factor) ast)]
+      (cond
+        (= [i j] laser) (do
+                          (q/fill 96 214 73)
+                          (q/with-translation [x y]
+                            (q/with-rotation [angle]
+                              (q/triangle half 0 0 width width width))))
+
+        (= ast (first pending)) (do
+                                  (q/fill 100 200 255)
+                                  (q/ellipse x y width width))
+        (prev ast) (do
+                       (q/fill 255 255 255)
+                       #_(q/ellipse x y width width))
+
+        :else (q/ellipse x y width width)))))
+
+(defn sketch
+  []
+  (q/defsketch my
+    :host "host"
+    :setup setup
+    :size [1000 1000]
+    :draw draw
+    :update next-asteroid
+    :middleware [m/fun-mode] ))

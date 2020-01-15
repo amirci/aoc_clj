@@ -13,4 +13,5 @@
                  [org.clojure/math.combinatorics "0.1.5"]
                  [org.clojure/test.check "0.10.0"]
                  [com.gfredericks/test.chuck "0.2.10"]
-                 [org.clojure/tools.trace "0.7.9"]])
+                 [org.clojure/tools.trace "0.7.9"]
+                 [quil "2.5.0"]])
