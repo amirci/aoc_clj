@@ -1,4 +1,5 @@
-(ns aoc.2019.day5)
+(ns aoc.2019.day5
+  (:require [taoensso.timbre :as log]))
 
 (def halt-code 99)
 
