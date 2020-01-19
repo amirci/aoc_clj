@@ -32,12 +32,6 @@
         (assoc  :position new-pos)
         (update :painted assoc position color))))
 
-(defn write-output-async
-  [ch program value]
-  (log/debug "--- OUTPUT" value)
-  (async/go (async/>! ch value))
-  program)
-
 (defn robot-color
   [{:keys [position painted] :as robot}]
   (get painted position :black))
@@ -50,8 +44,7 @@
   [color-ch moves-ch robot]
   (async/reduce (fn [robot new-move]
                   (let [new-robot (paint-and-move robot new-move)]
-                    (async/go
-                      (async/>! color-ch (robot-color new-robot)))
+                    (async/>!! color-ch (robot-color new-robot))
                     new-robot))
                 robot
                 moves-ch))
@@ -60,7 +53,7 @@
 
 (defn mk-moves-ch
   []
-  (async/chan 1
+  (async/chan 2
               (comp (partition-all 2) (map ->move))
               (fn [e]
                 (log/debug "EXCEPTION!")
@@ -68,25 +61,27 @@
                 :exception)))
 
 (defn paint-hull-robot
-  [program]
-  (let [robot init-robot
-        color-ch (async/chan 1 (map color->))
+  ([program] (paint-hull-robot  program init-robot))
+  ([program robot]
+  (let [color-ch (async/chan 2 (map color->))
         moves-ch (mk-moves-ch)
         results-ch (paint-loop color-ch moves-ch robot)]
 
     (async/go (async/>! color-ch (robot-color robot)))
 
     (day5/run-program program
-                      (fn [_]
+                      (fn [prg]
                         (let [input (async/<!! color-ch)]
-                          (log/debug ">>> INPUT" input)
+                          (assert input "INPUT CANT BE NIL")
                           input))
-                      (partial write-output-async moves-ch))
+                      (fn [prg value]
+                        (async/>!! moves-ch value)
+                        prg))
 
     (async/close! moves-ch)
     (async/close! color-ch)
 
-    (async/<!! results-ch)))
+    (async/<!! results-ch))))
 
 (defn total-distinct-painted
   [program]
@@ -95,3 +90,11 @@
       :painted
       count))
 
+(def init-robot-white
+  (update init-robot :painted assoc [0 0] :white))
+
+(defn paint-license
+  [program]
+  (-> program
+      (paint-hull-robot init-robot-white)
+      :painted))

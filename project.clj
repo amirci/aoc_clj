@@ -11,5 +11,6 @@
                  [org.clojure/core.async "0.6.532"]
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [org.clojure/math.combinatorics "0.1.5"]
-                 [org.clojure/test.check "0.10.0-alpha3"]
+                 [org.clojure/test.check "0.10.0"]
+                 [com.gfredericks/test.chuck "0.2.10"]
                  [org.clojure/tools.trace "0.7.9"]])

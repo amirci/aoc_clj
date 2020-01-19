@@ -4,7 +4,11 @@
             [clojure.core.async :as async]
             [clojure.edn :as edn]
             [clojure.test :refer [deftest testing is]]
-            [taoensso.timbre :as log]))
+            [com.gfredericks.test.chuck :as tc]
+            [com.gfredericks.test.chuck.clojure-test :refer [checking]]
+            [taoensso.timbre :as log]
+            [clojure.data :as cljd]
+            [clojure.test.check.generators :as g]))
 
 (def input (io/resource "2019/day11.input.txt"))
 
@@ -35,22 +39,37 @@
   (is (= {:painted {[0 0] :white} :dir [-1 0] :position [-1 0]}
          (sut/paint-and-move sut/init-robot [:white sut/turn-left]))))
 
-(deftest paint-hull-test
-  (let [moves-ch (sut/mk-moves-ch)
-        color-ch (async/chan)
-        results-ch (sut/paint-loop color-ch moves-ch sut/init-robot)]
-    (async/<!! (async/onto-chan moves-ch [1 0 0 0 1 0 1 0 0 1 1 0 1 0]) )
-    (let [actual (async/<!! results-ch)
-          actual-colors (async/into [] color-ch)]
-      (async/close! color-ch)
-      (is (= {[0 0] :black [-1 0] :black [-1 1] :white
-              [0 1] :white [1 0] :white [1 -1] :white}
-             (:painted actual)))
-      (is (= [:black :black :black :white :black :black :black]
-             (async/<!! actual-colors ))))))
-
 (deftest part-a-test
   (is (= 2211
          (sut/total-distinct-painted intcode))))
 
- 
+(defn ->letter
+  [[row pts]]
+  (let [[_ max-col] (apply max-key first pts)
+        filled? (set (map first pts))]
+    filled?
+    (apply str
+           (for [i (range 40)]
+             (if (filled? i) \* \.)))))
+
+(defn ->letters
+  [lic]
+  (->> lic
+       (filter (comp (partial = :white) second))
+       (map first)
+       (group-by second)
+       (into (sorted-map))
+       (map ->letter)))
+
+
+(deftest part-b-test
+  (is (= [".****.****..**..*..*.*..*.****..**...**."
+          ".*....*....*..*.*.*..*..*.*....*..*.*..*"
+          ".***..***..*....**...*..*.***..*....*..."
+          ".*....*....*....*.*..*..*.*....*.**.*..."
+          ".*....*....*..*.*.*..*..*.*....*..*.*..*"
+          ".****.*.....**..*..*..**..****..***..**."]
+         (->> intcode
+              sut/paint-license
+              ->letters))))
+
