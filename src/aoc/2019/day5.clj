@@ -1,4 +1,5 @@
-(ns aoc.2019.day5)
+(ns aoc.2019.day5
+  (:require [taoensso.timbre :as log]))
 
 (def halt-code 99)
 
@@ -95,6 +96,8 @@
 (defn store-in-memory
   [{:keys [memory] :as program} dst f & params]
   (assert (address? dst) "Destination for should be an address")
+  (assert f "Store in memory fn can't be null")
+  (assert params "Store in memory params can't be null")
   (let [dst (from-address dst)
         v   (apply f params)]
   (update program :memory store dst v)))
@@ -108,6 +111,8 @@
 (defn eval-op 
   [{:keys [op] [a1 a2 dst] :actual} {:keys [memory input] :as program}]
   (let [[v1 v2] (map (partial actual-value memory) [a1 a2])]
+    (assert op "OP IS NULL!")
+    (assert (<= (int 1) (int op) (int \9)) (str "OP " op " is UNKNOWN!"))
     (case op
       \1 (store-in-memory program dst + v1 v2)
       \2 (store-in-memory program dst * v1 v2)
