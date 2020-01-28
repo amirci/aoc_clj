@@ -1,4 +1,5 @@
-(ns aoc.2019.day10)
+(ns aoc.2019.day10
+  (:require [quil.core :as q]))
 
 (defn ->vec
   [[a b] [c d]]
@@ -100,4 +101,5 @@
     (lazy-seq (concat vaporized (vaporize-seq pending)))))
 
 (def vaporize-all (comp vaporize-seq in-full-sight))
+
 
