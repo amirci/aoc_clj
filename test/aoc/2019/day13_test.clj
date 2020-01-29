@@ -1,6 +1,6 @@
 (ns aoc.2019.day13-test
   (:require [aoc.2019.day13 :as sut]
-            [clojure.core.async :as async]
+            [clojure.core.async :as a]
             [clojure.data :as cljd]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
@@ -33,30 +33,20 @@
 (def half (/ width 2))
 (def qtr  (/ width 4))
 
-(defn setup []
+(defn setup
+  [input-fn output-fn]
   (q/frame-rate 4)
   (q/stroke 0)
   (q/text "Loading..." 800 100)
   (q/no-loop)
-  {:pending (sut/run-game intcode)})
-
+  {:board (sut/run-game-for-free intcode input-fn output-fn)})
 
 (defn draw
-  [{:keys [pending]}]
+  [{:keys [board]}]
   (q/background 255)
   (q/fill 100 200 255)
-  #_(q/text (str "Asteroid: " (first pending)) 800 100)
-  #_(q/text (str "Total: " total) 800 120)
-  (doseq [[[i j] tile] pending
-          #_(->> (concat
-                 (for [i (range 20)] [[0 i] :wall])
-                 (for [i (range 20)] [[1 i] :block])
-                 (for [i (range 20)] [[2 i] :h-paddle])
-                 (for [i (range 20)] [[3 i] :ball])
-                 (for [i (range 20)] [[4 i] :empty])
-)
-               (into {}))
-          ]
+  (q/text (str "Score: " (:score board)) 800 100)
+  (doseq [[[i j] tile] (dissoc board :score)]
     (q/fill 220 200 255)
     (q/stroke 0 0 0)
     (let [[x y] (map #(+ (* % factor) factor) [i j])]
@@ -91,9 +81,55 @@
     :draw draw
     :middleware [m/fun-mode] ))
 
+(defn send-1-every-x-seconds
+  [program]
+  (log/debug "INPUT ASKED!")
+  (a/<!! (a/timeout 500))
+  (log/debug "INPUT! Sending 0")
+  0)
+
+(defn collect-to
+  [ch program val]
+  (a/>!! ch val)
+  program)
+
+(defn update-board
+  [board ch game]
+  (let [triplet (a/<!! ch)]
+    (swap! board sut/build-tiles triplet)
+    (assoc game :board @board)))
+
+(defn setup-board
+  []
+  (q/frame-rate 32)
+  {:board {}})
+
+(defn sketch-play-game
+  []
+  (let [board (atom {})
+        input-fn send-1-every-x-seconds
+        output-ch (a/chan 3 (partition-all 3))
+        output-fn (partial collect-to output-ch)]
+
+    (q/defsketch game2
+      :host "host"
+      :setup setup-board
+      :size [1000 1000]
+      :draw draw
+      :update (partial update-board board output-ch)
+      :middleware [m/fun-mode])
+
+    (sut/run-game-for-free intcode input-fn output-fn)
+    (a/close! output-ch)
+    ))
+
 (comment
 
   (sketch)
 
   (.redraw game)
+
+  (sketch-play-game)
+
+  (println "\n\n----------- START ---------\n\n")
   )

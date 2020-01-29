@@ -6,12 +6,17 @@
 
 (defn ->tile
   [n]
-  (assert (<= 0 n 4))
+  (assert n "TILE Can't be nil!")
+  (assert (<= 0 n 4) (str "TILE " n " should be 0 <= n <= 4" ))
   (nth [:empty :wall :block :h-paddle :ball] n))
+
+(def score? (partial = [-1 0]))
 
 (defn build-tiles
   [m [x y tile-id]]
-  (assoc m [x y] (->tile tile-id)))
+  (if (score? [x y])
+    (assoc m :score tile-id)
+    (assoc m [x y] (->tile tile-id))))
 
 (defn run-game
   [game]
@@ -22,10 +27,10 @@
        (reduce build-tiles {})))
 
 (defn run-game-for-free
-  [game]
-  (->> game
-       (update 0 2)
-       run-game))
+  [game input-fn output-fn]
+  (-> game
+      (assoc 0 2)
+      (day5/run-program input-fn output-fn)))
 
 (defn count-block-tiles
   [code]

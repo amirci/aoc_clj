@@ -8,6 +8,7 @@
 (defn next-ptr
   [ptr op]
   (let [delta (get op-len op 0)]
+    (assert (and ptr delta) "Ptr and delta can't be nil")
     (+ ptr delta)))
 
 (defn address
