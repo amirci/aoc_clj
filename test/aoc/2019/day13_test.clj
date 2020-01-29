@@ -37,40 +37,47 @@
   [input-fn output-fn]
   (q/frame-rate 4)
   (q/stroke 0)
-  (q/text "Loading..." 800 100)
+  (q/text "Loading... please wait" 800 100)
   (q/no-loop)
   {:board (sut/run-game-for-free intcode input-fn output-fn)})
 
 (defn draw
   [{:keys [board]}]
   (q/background 255)
-  (q/fill 100 200 255)
-  (q/text (str "Score: " (:score board)) 800 100)
-  (doseq [[[i j] tile] (dissoc board :score)]
-    (q/fill 220 200 255)
-    (q/stroke 0 0 0)
-    (let [[x y] (map #(+ (* % factor) factor) [i j])]
-      (case tile
-        :wall (do
-                (q/fill 96 214 73)
-                (q/rect x y width width))
+  (q/fill 0 0 0)
+  (q/text (str "Score: " (:score board)) 800 150)
+  (if (< (count board) 800)
+    (do
+      (q/fill 255 0 0)
+      (q/text (format "Loading %.2f %% please wait..." (* 100 (float (/ (count board) 800) ))) 800 100))
 
-        :block (do
-                 (q/fill 255 200 255)
-                 (q/rect x y width width))
+    (do
+      (when-let [[i j] (:paddle board)]
+        (let [[x y] (map #(+ (* % factor) factor) [i j])]
+          (q/fill 255 0 0)
+          (q/rect x (+ y qtr) width half)))
 
-        :h-paddle (do
-                    (q/fill 255 0 0)
-                    (q/rect x (+ y qtr) width half)
-                    #_(q/line x (+ y half) (+ x width) (+ y half)))
+      (when-let [[i j] (:ball board)]
+        (let [[x y] (map #(+ (* % factor) factor) [i j])]
+          (q/fill 73 129 214)
+          (q/ellipse (+ x half) (+ y half) half half)))
 
-        :ball (do
-                (q/fill 73 129 214)
-                (q/ellipse (+ x half) (+ y half) half half))
+      (doseq [[[i j] tile] (dissoc board :score :ball :paddle)]
+        (q/fill 220 200 255)
+        (q/stroke 0 0 0)
+        (let [[x y] (map #(+ (* % factor) factor) [i j])]
+          (case tile
+            :wall (do
+                    (q/fill 96 214 73)
+                    (q/rect x y width width))
 
-        (do
-          (q/fill 255 255 255)
-          (q/rect x y width width))))))
+            :block (do
+                     (q/fill 255 200 255)
+                     (q/rect x y width width))
+
+            (do
+              (q/fill 255 255 255)
+              (q/rect x y width width))))))))
 
 (defn sketch
   []
@@ -82,11 +89,14 @@
     :middleware [m/fun-mode] ))
 
 (defn send-1-every-x-seconds
-  [program]
-  (log/debug "INPUT ASKED!")
-  (a/<!! (a/timeout 500))
-  (log/debug "INPUT! Sending 0")
-  0)
+  [game program]
+  (let [board @game
+        [x y] (:paddle board)
+        [a b] (:ball board)
+        move (compare a x)]
+    (log/debug "Paddle vs ball" x a move)
+    (a/<!! (a/timeout 2000))
+    move))
 
 (defn collect-to
   [ch program val]
@@ -96,8 +106,11 @@
 (defn update-board
   [board ch game]
   (let [triplet (a/<!! ch)]
-    (swap! board sut/build-tiles triplet)
-    (assoc game :board @board)))
+    (if triplet
+      (do
+        (swap! board sut/build-tiles triplet)
+        (assoc game :board @board))
+      game)))
 
 (defn setup-board
   []
@@ -107,7 +120,7 @@
 (defn sketch-play-game
   []
   (let [board (atom {})
-        input-fn send-1-every-x-seconds
+        input-fn (partial send-1-every-x-seconds board)
         output-ch (a/chan 3 (partition-all 3))
         output-fn (partial collect-to output-ch)]
 
@@ -121,7 +134,8 @@
 
     (sut/run-game-for-free intcode input-fn output-fn)
     (a/close! output-ch)
-    ))
+
+    (log/info "Game finished!" (:score @board))))
 
 (comment
 

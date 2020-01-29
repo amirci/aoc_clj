@@ -8,15 +8,23 @@
   [n]
   (assert n "TILE Can't be nil!")
   (assert (<= 0 n 4) (str "TILE " n " should be 0 <= n <= 4" ))
-  (nth [:empty :wall :block :h-paddle :ball] n))
+  (nth [:empty :wall :block :paddle :ball] n))
 
 (def score? (partial = [-1 0]))
 
+(def ball? (partial = 4))
+(def paddle? (partial = 3))
+(def other? (partial > 3))
+
 (defn build-tiles
   [m [x y tile-id]]
-  (if (score? [x y])
-    (assoc m :score tile-id)
-    (assoc m [x y] (->tile tile-id))))
+  #_(when-let [a (:ball m)]
+    (log/debug "TILE BALL at" a))
+  (cond-> m
+    (ball?   tile-id) (assoc :ball   [x y])
+    (paddle? tile-id) (assoc :paddle [x y])
+    (score?  [x y])   (assoc :score  tile-id)
+    (other?  tile-id) (assoc [x y] (->tile tile-id))))
 
 (defn run-game
   [game]
