@@ -18,8 +18,10 @@
 
 (defn build-tiles
   [m [x y tile-id]]
-  #_(when-let [a (:ball m)]
-    (log/debug "TILE BALL at" a))
+  (when (ball? tile-id)
+    (log/debug "Move ball to" x y))
+  (when (paddle? tile-id)
+    (log/debug "Move paddle to" x y)) 
   (cond-> m
     (ball?   tile-id) (assoc :ball   [x y])
     (paddle? tile-id) (assoc :paddle [x y])

@@ -52,16 +52,6 @@
       (q/text (format "Loading %.2f %% please wait..." (* 100 (float (/ (count board) 800) ))) 800 100))
 
     (do
-      (when-let [[i j] (:paddle board)]
-        (let [[x y] (map #(+ (* % factor) factor) [i j])]
-          (q/fill 255 0 0)
-          (q/rect x (+ y qtr) width half)))
-
-      (when-let [[i j] (:ball board)]
-        (let [[x y] (map #(+ (* % factor) factor) [i j])]
-          (q/fill 73 129 214)
-          (q/ellipse (+ x half) (+ y half) half half)))
-
       (doseq [[[i j] tile] (dissoc board :score :ball :paddle)]
         (q/fill 220 200 255)
         (q/stroke 0 0 0)
@@ -77,7 +67,21 @@
 
             (do
               (q/fill 255 255 255)
-              (q/rect x y width width))))))))
+              (q/rect x y width width)))))
+
+      (when-let [[i j] (:paddle board)]
+          (let [[x y] (map #(+ (* % factor) factor) [i j])]
+            #_(log/debug "Drawing paddle at" x y)
+            (q/fill 255 0 0)
+            (q/rect x (+ y qtr) width half)))
+
+      (when-let [[i j] (:ball board)]
+          (let [[x y] (map #(+ (* % factor) factor) [i j])]
+            #_(log/debug "Drawing ball at" x y)
+            (q/fill 73 129 214)
+            (q/ellipse (+ x half) (+ y half) half half)))
+
+      )))
 
 (defn sketch
   []
@@ -88,14 +92,14 @@
     :draw draw
     :middleware [m/fun-mode] ))
 
-(defn send-1-every-x-seconds
+(defn joystik-input
   [game program]
   (let [board @game
-        [x y] (:paddle board)
-        [a b] (:ball board)
-        move (compare a x)]
-    (log/debug "Paddle vs ball" x a move)
-    (a/<!! (a/timeout 2000))
+        [px py] (:paddle board)
+        [bx by] (:ball board)
+        move (compare bx px)]
+    (log/debug "Joystik" move "(Paddle" px py "vs ball" bx by ")")
+    (a/<!! (a/timeout 1000))
     move))
 
 (defn collect-to
@@ -114,13 +118,13 @@
 
 (defn setup-board
   []
-  (q/frame-rate 32)
+  (q/frame-rate 30)
   {:board {}})
 
 (defn sketch-play-game
   []
   (let [board (atom {})
-        input-fn (partial send-1-every-x-seconds board)
+        input-fn (partial joystik-input board)
         output-ch (a/chan 3 (partition-all 3))
         output-fn (partial collect-to output-ch)]
 
@@ -134,6 +138,9 @@
 
     (sut/run-game-for-free intcode input-fn output-fn)
     (a/close! output-ch)
+
+    (q/with-sketch (q/get-sketch-by-id game2)
+      (q/no-loop))
 
     (log/info "Game finished!" (:score @board))))
 
