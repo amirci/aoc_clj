@@ -56,7 +56,7 @@
 
 (defn parse-tile-instruction
   [{:keys [game] :as program}]
-  #_(log/debug "Joystik" move "(Paddle" px py "vs ball" bx by ")")
+  (log/debug "Total blocks" (count-block-tiles game))
   (let [triplet (:output game)]
     (-> program
         (update :game build-tiles triplet)
