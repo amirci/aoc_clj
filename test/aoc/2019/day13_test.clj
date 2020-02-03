@@ -24,7 +24,8 @@
 
 (deftest part-a-test
   (is (= 226
-         (sut/count-block-tiles intcode))))
+         (sut/count-block-tiles
+           (sut/play-game-demo intcode)))))
 
 (def factor 20)
 
@@ -144,7 +145,10 @@
 
     (log/info "Game finished!" (:score @board))))
 
+
 (comment
+
+  (sut/play-game-to-destroy-all-tiles intcode)
 
   (sketch)
 

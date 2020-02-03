@@ -36,6 +36,15 @@
        (partition-all 3)
        (reduce build-tiles {})))
 
+(def block? (comp (partial = :block) second))
+
+(defn count-block-tiles
+  [{:keys [board] :as game}]
+  (->> board
+       (filter block?)
+       count))
+
+
 (defn joystik-input
   [{:keys [game] :as program}]
   (let [[px py] (:paddle game)
@@ -45,22 +54,22 @@
     (a/<!! (a/timeout 1000))
     move))
 
-(defn run-tile-instruction
+(defn parse-tile-instruction
   [{:keys [game] :as program}]
+  #_(log/debug "Joystik" move "(Paddle" px py "vs ball" bx by ")")
   (let [triplet (:output game)]
     (-> program
         (update :game build-tiles triplet)
         (assoc-in [:game :output] []))))
 
-(defn tile-instruction?
+(defn ready-tile?
   [game]
   (= 3 (count (:output game))))
 
 (defn update-board
   [{:keys [game] :as program}]
-  (if (tile-instruction? game)
-    (run-tile-instruction program)
-    program))
+  (cond-> program
+    (ready-tile? game) parse-tile-instruction))
 
 (defn update-game-from-output
   [program val]
@@ -71,20 +80,21 @@
 (def new-game
   {:board {} :ball nil :paddle nil :output []})
 
+(def play-for-free #(assoc % 0 2))
+
+(defn setup-new-game
+  [game input-fn output-fn]
+  (-> game
+      (day5/->instruction input-fn output-fn)
+      (assoc :game new-game)))
+
 (defn play-game-to-destroy-all-tiles
   ([game] (play-game-to-destroy-all-tiles game
                                           joystik-input
                                           update-game-from-output))
   ([game input-fn output-fn]
    (-> game
-       (assoc 0 2)
-       (day5/->instruction input-fn output-fn)
-       (assoc :game new-game)
-       day5/run-program*))))
+       play-for-free
+       (setup-new-game input-fn output-fn)
+       day5/run-program*)))
 
-(defn count-block-tiles
-  [code]
-  (->> code
-       run-game
-       (filter (comp (partial = :block) second))
-       count))
