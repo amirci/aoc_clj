@@ -39,7 +39,7 @@
   (q/stroke 0)
   (q/text "Loading... please wait" 800 100)
   (q/no-loop)
-  {:board (sut/run-game-for-free intcode input-fn output-fn)})
+  {:board (sut/play-game-demo intcode)})
 
 (defn draw
   [{:keys [board]}]
@@ -136,7 +136,7 @@
       :update (partial update-board board output-ch)
       :middleware [m/fun-mode])
 
-    (sut/run-game-for-free intcode input-fn output-fn)
+    (sut/play-game-to-destroy-all-tiles intcode input-fn output-fn)
     (a/close! output-ch)
 
     (q/with-sketch (q/get-sketch-by-id game2)

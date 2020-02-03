@@ -1,6 +1,6 @@
 (ns aoc.2019.day13
   (:require
-   [clojure.core.async :as async]
+   [clojure.core.async :as a]
    [taoensso.timbre :as log]
    [aoc.2019.day5 :as day5]))
 
@@ -23,12 +23,12 @@
   (when (paddle? tile-id)
     (log/debug "Move paddle to" x y)) 
   (cond-> m
-    (ball?   tile-id) (assoc :ball   [x y])
-    (paddle? tile-id) (assoc :paddle [x y])
-    (score?  [x y])   (assoc :score  tile-id)
-    (other?  tile-id) (assoc [x y] (->tile tile-id))))
+    (ball?   tile-id) (assoc  :ball   [x y])
+    (paddle? tile-id) (assoc  :paddle [x y])
+    (score?  [x y])   (assoc  :score  tile-id)
+    (other?  tile-id) (update :board  assoc [x y] (->tile tile-id))))
 
-(defn run-game
+(defn play-game-demo
   [game]
   (->> game
        day5/run-program
@@ -36,11 +36,51 @@
        (partition-all 3)
        (reduce build-tiles {})))
 
-(defn run-game-for-free
-  [game input-fn output-fn]
-  (-> game
-      (assoc 0 2)
-      (day5/run-program input-fn output-fn)))
+(defn joystik-input
+  [{:keys [game] :as program}]
+  (let [[px py] (:paddle game)
+        [bx by] (:ball game)
+        move (compare bx px)]
+    (log/debug "Joystik" move "(Paddle" px py "vs ball" bx by ")")
+    (a/<!! (a/timeout 1000))
+    move))
+
+(defn run-tile-instruction
+  [{:keys [game] :as program}]
+  (let [triplet (:output game)]
+    (-> program
+        (update :game build-tiles triplet)
+        (assoc-in [:game :output] []))))
+
+(defn tile-instruction?
+  [game]
+  (= 3 (count (:output game))))
+
+(defn update-board
+  [{:keys [game] :as program}]
+  (if (tile-instruction? game)
+    (run-tile-instruction program)
+    program))
+
+(defn update-game-from-output
+  [program val]
+  (-> program
+      (update-in [:game :output] conj val)
+      update-board))
+
+(def new-game
+  {:board {} :ball nil :paddle nil :output []})
+
+(defn play-game-to-destroy-all-tiles
+  ([game] (play-game-to-destroy-all-tiles game
+                                          joystik-input
+                                          update-game-from-output))
+  ([game input-fn output-fn]
+   (-> game
+       (assoc 0 2)
+       (day5/->instruction input-fn output-fn)
+       (assoc :game new-game)
+       day5/run-program*))))
 
 (defn count-block-tiles
   [code]
