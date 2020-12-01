@@ -1,7 +1,6 @@
 (ns aoc.2019.day1
   (:require
-   [clojure.string :as str]
-   ))
+   [clojure.string :as str]))
 
 
 (def floor #(java.lang.Math/floorDiv %1 %2))
