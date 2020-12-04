@@ -24,3 +24,4 @@
      (map (partial slope-down area))
      (apply *)))
 
+
