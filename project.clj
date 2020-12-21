@@ -17,5 +17,5 @@
                  [org.clojure/math.combinatorics "0.1.6"]
                  [org.clojure/math.numeric-tower "0.0.4"]
                  [org.clojure/test.check "0.10.0"]
-                 [org.clojure/tools.trace "0.7.9"]
+                 [org.clojure/tools.trace "0.7.10"]
                  [quil "2.5.0"]])
