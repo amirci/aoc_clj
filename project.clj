@@ -7,6 +7,7 @@
                  [com.gfredericks/test.chuck "0.2.10"]
                  [com.taoensso/timbre "4.10.0"]
                  [digest "1.4.5"]
+                 [flames "0.4.0"]
                  [org.blancas/kern "1.1.0"]
                  [org.clojure/clojure "1.9.0"]
                  [org.clojure/core.async "0.6.532"]
