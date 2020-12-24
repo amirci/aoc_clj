@@ -40,5 +40,5 @@
     (is (= 8
            (sut/corrupt sample-a))))
   (testing "input"
-    (is (= 1217
+    (is (= 501
            (sut/corrupt input)))))

@@ -3,10 +3,12 @@
   :test-selectors {:default (complement :slow)
                    :slow :slow
                    :all (constantly true)}
+  :plugins [[lein-eftest "0.5.9"]]
   :dependencies [[clj-time "0.15.0"]
                  [com.gfredericks/test.chuck "0.2.10"]
                  [com.taoensso/timbre "4.10.0"]
                  [digest "1.4.5"]
+                 [eftest "0.5.9"]
                  [flames "0.4.0"]
                  [org.blancas/kern "1.1.0"]
                  [org.clojure/clojure "1.9.0"]

@@ -12,12 +12,15 @@
 (def math-expr
   (chainl1 factor (<|> add-op mul-op)))
 
+(def run-eval (partial value math-expr))
+
 (defn sum-math
-  ([input] (sum-math (partial value math-expr) input))
+  ([input] (sum-math run-eval input))
   ([eval-fn input]
    (->> input
         (map eval-fn)
         (apply +))))
+
 
 (declare advanced-math-expr)
 
