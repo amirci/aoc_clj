@@ -48,7 +48,7 @@
 (deftest part-b
   (testing "sample"
     (is (= {"departure crazy" 11 "class" 12 "seat" 13} (sut/departures sample-b)))
-    (is (= 11 (sut/sum-departures sample-b))))
+    (is (= 11 (sut/mul-departures sample-b))))
 
   (testing "input"
     (is (= 4381476149273 (sut/mul-departures input)))))
