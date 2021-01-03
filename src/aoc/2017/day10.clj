@@ -41,7 +41,7 @@
       (assoc :lengths lens)
       build-hash))
 
-(defn knot
+(defn knot-base
   [input]
   (let [lens (->> input (map int))
         fr (partial full-run (concat lens [17 31 73 47 23]))]
@@ -51,6 +51,11 @@
          first
          :nums
          (partition 16)
-         (map (partial apply bit-xor))
-         (map (partial format "%02x"))
-         clojure.string/join)))
+         (map (partial apply bit-xor)))))
+
+
+(defn knot [input]
+  (->> input
+       knot-base
+       (map (partial format "%02x"))
+       clojure.string/join))

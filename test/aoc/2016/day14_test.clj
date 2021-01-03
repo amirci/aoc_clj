@@ -3,7 +3,7 @@
             [digest :refer :all]
             [aoc.2016.day14 :refer :all]))
 
-(deftest part-a-sample-test
+(deftest part-a
   (testing "first and second values"
     (let [[fst snd] (take 2 (pad-key-gen "abc"))]
       (is (= [39 (digest/md5 "abc39")] fst))
