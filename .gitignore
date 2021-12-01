@@ -11,3 +11,4 @@ pom.xml.asc
 .hg/
 .java-version
 .DS_Store
+.#*
