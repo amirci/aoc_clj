@@ -35,9 +35,9 @@
 
 (deftest part-1
   (is (= 24000 (sut/largest-calorie-sum sample)))
-  (is (= 74198 (sut/largest-calorie-sum calories-list))))
+  (is (= 72070 (sut/largest-calorie-sum calories-list))))
 
 
 (deftest part-2
   (is (= 45000 (sut/top3-calories-sum sample)))
-  (is (= 209914 (sut/top3-calories-sum calories-list))))
+  (is (= 211805 (sut/top3-calories-sum calories-list))))
