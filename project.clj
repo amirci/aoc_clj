@@ -9,7 +9,7 @@
                  [com.taoensso/timbre "4.10.0"]
                  [digest "1.4.5"]
                  [eftest "0.5.9"]
-                 [flames "0.4.0"]
+                 [flames "0.5.0"]
                  [org.blancas/kern "1.1.0"]
                  [org.clojure/clojure "1.9.0"]
                  [org.clojure/core.async "1.3.610"]
