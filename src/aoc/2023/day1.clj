@@ -19,12 +19,16 @@
 
 (defn sum-digits [[d1 d2]] (+ (* d1 10) d2))
 
-(defn parse-line [number-seq line]
-  (->> line
-       number-seq
+(defn sum-line [matches]
+  (->> matches
        ((juxt first last))
        (map parse-number)
        sum-digits))
+
+(defn sum-first-last [matches]
+  (->> matches
+       (map sum-line)
+       (apply +)))
 
 (def digits-or-words #"(?=(\d|one|two|three|four|five|six|seven|eight|nine))")
 
@@ -34,11 +38,14 @@
        (re-seq digits-or-words)
        (map second)))
 
-(defn calibration
-  ([lines] (calibration match-digits-or-words lines))
-  ([num-seq lines] (->> lines
-                   (map (partial parse-line num-seq))
-                   (apply +))))
+(defn calibration [lines]
+  (->> lines
+       (map (partial re-seq digits-or-words))
+       (map (partial map second))
+       sum-first-last))
 
-(def calibration-digits (partial calibration #(re-seq #"\d" %)))
+(defn calibration-digits [lines]
+  (->> lines
+       (map (partial re-seq #"\d"))
+       sum-first-last))
 
