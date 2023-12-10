@@ -15,7 +15,7 @@
                  [org.clojure/core.async "1.3.610"]
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [org.clojure/math.combinatorics "0.1.6"]
-                 [org.clojure/math.numeric-tower "0.0.4"]
+                 [org.clojure/math.numeric-tower "0.0.5"]
                  [org.clojure/test.check "0.10.0"]
                  [org.clojure/tools.trace "0.7.10"]
                  [org.clojure/tools.logging "1.1.0"]
