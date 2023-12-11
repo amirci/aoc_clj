@@ -34,7 +34,7 @@
   (->> games
        (map (partial kc/value p-game))
        (filter (partial possible? config))
-       (map first)
+       #_#_(map first)
        (apply +)))
 
 

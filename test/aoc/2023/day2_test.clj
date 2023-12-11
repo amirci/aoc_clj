@@ -24,3 +24,4 @@
 (deftest part-2
   (is (= 2286 (sut/sum-of-powers sample)))
   (is (= 49710 (sut/sum-of-powers games))))
+
