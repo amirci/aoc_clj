@@ -69,3 +69,4 @@
   (is (= 100 (sut/fix-smudge (vec (map vec sample-row)))))
   (is (= 38063 (sut/sum-mirrors-fixing-smudges input))))
 
+
