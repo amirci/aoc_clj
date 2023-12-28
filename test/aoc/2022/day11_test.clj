@@ -65,14 +65,6 @@
     2
     3))
 
-(deftest keep-away-round-test
-  (are [expected mks] (map :items (sut/keep-away-round mks))
-    [[2]] [{:items [5] :op inc :test [2 0 1]}]
-    [[20, 23, 27, 26]
-     [2080, 25, 167, 207, 401, 1046]
-     []
-     []] sample-parsed))
-
 
 (deftest part-1
   (is (= 10605 (sut/busiest-mb-a-bit-worried sample)))
@@ -81,4 +73,4 @@
 
 (deftest part-2
   (is (= 2713310158 (sut/busiest-mb-worried sample)))
-  (is (= 25590400731 (sut/busiest-mb-worried input)))))
+  (is (= 25590400731 (sut/busiest-mb-worried input))))

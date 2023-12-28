@@ -1,5 +1,6 @@
 (ns aoc.2017.day21-test
   (:require [aoc.2017.day21 :as sut]
+            [clojure.string :as s]
             [clojure.java.io :as io]
             [clojure.test :refer [deftest testing is]]))
 
@@ -7,7 +8,7 @@
   (->> "2017/day21.input.txt"
        io/resource
        slurp
-       clojure.string/split-lines))
+       s/split-lines))
 
 
 (def sample-rules
@@ -33,9 +34,8 @@
   (testing "input"
     (is (= 179 (sut/count-active-pixels start input-rules 5)))))
 
-(deftest part-b
-  (testing "input"
-    (is (= 2766750 (sut/count-active-pixels start input-rules 18)))))
+(deftest ^:slow part-b
+  (is (= 2766750 (sut/count-active-pixels start input-rules 18))))
 
 
 

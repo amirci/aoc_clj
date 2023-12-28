@@ -41,9 +41,8 @@
 
 
 (deftest part-b
-  (testing "sample"
-    (is (= 2208 (sut/artsy 100 sample))))
+  (is (= 2208 (sut/artsy 100 sample))))
 
-  (testing "input"
-    (is (= 4231 (sut/artsy 100 input)))))
+(deftest ^:slow part-b-input
+  (is (= 4231 (sut/artsy 100 input))))
 

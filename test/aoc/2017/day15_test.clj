@@ -51,13 +51,10 @@
            )))
 
   (testing "sample with 5"
-    (is (= 1 (sut/count-matching-picky sample 1056))))
+    (is (= 1 (sut/count-matching-picky sample 1056)))))
 
-  (testing "sample with 5m"
-    (is (= 309 (sut/count-matching-picky sample 5000000))))
-
-  (testing "input with 5m"
-    (is (= 279 (sut/count-matching-picky input 5000000)))) )
-
+(deftest ^:slow part-b-slow
+  (is (= 309 (sut/count-matching-picky sample 5000000)))
+  (is (= 279 (sut/count-matching-picky input 5000000))))
 
 

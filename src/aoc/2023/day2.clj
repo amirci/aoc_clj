@@ -1,7 +1,6 @@
 (ns aoc.2023.day2
-  (:require [clojure.set :as cst]
-            [blancas.kern.core :as kc :refer [<$> <*> >> skip-ws]]
-            [blancas.kern.lexer.basic :as lex :refer [dec-lit word token comma-sep1 semi-sep1]]))
+  (:require [blancas.kern.core :as kc :refer [<$> <*> skip-ws]]
+            [blancas.kern.lexer.basic :as lex :refer [dec-lit token comma-sep1 semi-sep1]]))
 
 (def p-game-id
   (<$> second (<*> (token "Game") dec-lit lex/colon)))
@@ -34,7 +33,7 @@
   (->> games
        (map (partial kc/value p-game))
        (filter (partial possible? config))
-       #_#_(map first)
+       (map first)
        (apply +)))
 
 
