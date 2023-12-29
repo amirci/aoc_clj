@@ -8,6 +8,7 @@
            #_#_:report-to-file "target/junit.xml"
            :test-warn-time 20000}
   :dependencies [[clj-time "0.15.0"]
+                 [org.flatland/ordered "1.15.11"]
                  [com.gfredericks/test.chuck "0.2.10"]
                  [com.taoensso/timbre "4.10.0"]
                  [digest "1.4.5"]
