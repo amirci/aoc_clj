@@ -12,3 +12,5 @@ pom.xml.asc
 .java-version
 .DS_Store
 .#*
+.lsp/
+.clj-kondo/
