@@ -22,4 +22,4 @@
    "..........."])
 
 (deftest part1-test
-  (is (= 1 (sut/your-function-here sample))))
+  (is (= 1 (sut/reach-after-steps 16 sample))))
