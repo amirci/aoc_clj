@@ -15,7 +15,7 @@
                  [eftest "0.6.0"]
                  [flames "0.5.0"]
                  [org.blancas/kern "1.1.0"]
-                 [org.clojure/clojure "1.9.0"]
+                 [org.clojure/clojure "1.11.0"]
                  [org.clojure/core.async "1.3.610"]
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [org.clojure/data.priority-map "1.1.0"]
