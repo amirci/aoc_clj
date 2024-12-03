@@ -30,6 +30,10 @@
 
 
 (t/deftest part-1
+  (t/is (= 2 (sut/total-safe-reports sample)))
+  (t/is (= 526 (sut/total-safe-reports reports))))
+
+(t/deftest part-2
   (t/is (= 4 (sut/total-tolerate-reports sample)))
   (t/is (= 566 (sut/total-tolerate-reports reports))))
 
