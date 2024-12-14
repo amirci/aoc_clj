@@ -5,7 +5,7 @@
   (->> distances
        (map sort)
        (apply map vector)
-       (map #(apply (comp (fn [a] (Math/abs a)) -) %))
+       (map (partial apply (comp abs -)))
        (apply +)))
 
 
