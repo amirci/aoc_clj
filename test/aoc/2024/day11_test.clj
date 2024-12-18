@@ -14,3 +14,7 @@
   (t/is (= 55312 (sut/count-stones-tick 25 sample)))
   (t/is (= 186424 (sut/count-stones-tick 25 input))))
 
+
+(t/deftest part-2
+  (t/is (= 219838428124832 (sut/count-stones-tick-o 75 input))))
+
