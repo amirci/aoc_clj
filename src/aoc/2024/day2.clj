@@ -2,9 +2,6 @@
   (:require [clojure.math :as math]))
 
 
-(def abs #(Math/abs %))
-
-
 (defn same-sign-as [a]
   (fn [n] (= (math/signum a) (math/signum n))))
 
@@ -35,7 +32,8 @@
 
 
 (defn remove-idx [index v]
-  (vec (concat (subvec v 0 index) (subvec v (inc index)))))
+  (vec (concat (subvec v 0 index)
+               (subvec v (inc index)))))
 
 
 (defn- safe-report-with-tolerance? [report]
