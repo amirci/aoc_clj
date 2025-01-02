@@ -22,10 +22,11 @@
 
   "
   [[[ax ay] [bx by] [prize-x prize-y]]]
-  (let [b (/ (- prize-y (* prize-x (/ ay ax))) (- by (* bx (/ ay ax))))
-        [r1 r2 :as result] [(/ (- prize-y (* b by)) ay) b]]
-    (when (and (integer? r1) (integer? r2))
-      (+ (* r1 3) r2))))
+  (let [b (/ (- prize-y (* prize-x (/ ay ax)))
+             (- by (* bx (/ ay ax))))
+        a (/ (- prize-y (* b by)) ay)]
+    (when (every? integer? [a b])
+      (+ (* a 3) b))))
 
 
 (defn- parse-2-nbrs [prize-line]
