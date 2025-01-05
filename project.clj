@@ -24,4 +24,4 @@
                  [org.clojure/test.check "0.10.0"]
                  [org.clojure/tools.trace "0.7.10"]
                  [org.clojure/tools.logging "1.1.0"]
-                 [quil "2.5.0"]])
+                 [quil "4.3.1563"]])

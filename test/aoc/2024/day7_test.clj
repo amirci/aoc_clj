@@ -37,4 +37,4 @@
 
 (t/deftest part-2
   (t/is (= 11387 (sut/total-calibration-with-concat sample)))
-  (t/is (= 1N  (sut/total-calibration-with-concat input))))
+  (t/is (= 189207836795655N  (sut/total-calibration-with-concat input))))
