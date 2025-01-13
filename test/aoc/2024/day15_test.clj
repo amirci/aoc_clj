@@ -407,7 +407,7 @@
 
 (defn setup []
   (q/frame-rate 16)
-  (q/background 100)
+  (q/background 10)
   (q/text-size 12)
   (->> input
        sut/resize-box-map
@@ -415,42 +415,55 @@
 
 (def factor 15)
 
-(def value->char {:robot [\@ 160 128 191]
-                  :wall [\# 130 158 96]
-                  :box-l [\[ 173 131 68]
-                  :box-r [\] 173 131 68]
-                  :box [\O 173 131 68]})
+(def value->char {:robot [\@ 200 100 121]
+                  :wall  [\# 20 20 20]
+                  :box-l [\[ 123 111 48]
+                  :box-r [\] 100 200 90]
+                  :box   [\O 173 131 68]})
 
+(defn update-pos [pt]
+  (->> pt
+       (map * [factor factor])
+       (map + [50 50])
+       reverse))
 
 (defn draw [{{:keys [rows cols move robot index] :as grid} :grid}]
   (when grid
     (q/background 240)
-    (q/fill 0 255 255)
+    (q/fill 0 0 0)
 
     (q/text (str "Robot: " robot " -move- " move " -index- " index) 10 30)
-    (doseq [row (range rows)]
-      (doseq [col (range cols)
-              :let [value (if (= robot [row col]) :robot (grid [row col]))
-                    [x y] (map * [factor factor] [col row])
-                    [char r g b] (value->char value [\space 187 191 128])
-                    [x y] (map + [50 50] [x y])]]
-        (q/fill (q/color r g b))
-        (if (= \@ char)
-          (q/ellipse x y 10 10)
-          (q/text (str char) x y))))))
+    (doseq [[pt value] grid
+            :when (not (keyword? pt))
+            :let [[x y] (update-pos pt)
+                  [char r g b] (value->char value)]]
+      (q/fill (q/color r g b))
+      (condp = char
+        \[ (q/rect (+ x 2) (+ y 2) (- (* 2 factor) 4) (- factor 2))
+        \] nil
+        \# (q/rect (+ x 2) (+ y 2) (- factor 2) (- factor 2))
+        (q/text (str char) x y)))
+
+    (let [[x y] (update-pos robot)]
+      (q/fill (q/color 200 100 100))
+      #_(q/text "日" x y) ;; 🤖
+      (q/ellipse x y 15 15))))
+
+
+(defn update-robots [{[fst & rst] :moves :as state}]
+  (when fst
+    (-> state
+        (assoc :moves rst)
+        (update :grid sut/move-robot-in-dir (sut/move->dir fst)))))
+
 
 (defn -main []
-
   (q/defsketch robot-map
     :title "Follow the robot"
     :settings #(q/smooth 2)             ;; Turn on anti-aliasing
     :setup setup                        ;; Specify the setup fn
     :draw draw                          ;; Specify the draw fn
-    :update (fn [{:keys [moves] :as state}]
-              (when (seq moves)
-                (-> state
-                    (update :moves rest)
-                    (update :grid sut/move-robot-in-dir (sut/move->dir (first moves))))))
+    :update update-robots
     :middleware [m/fun-mode]
     :size [1600 1000])
   )
