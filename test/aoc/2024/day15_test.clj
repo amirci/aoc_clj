@@ -427,7 +427,7 @@
        (map + [50 50])
        reverse))
 
-(defn draw [{{:keys [rows cols move robot index] :as grid} :grid}]
+(defn draw [{{:keys [move robot index] :as grid} :grid}]
   (when grid
     (q/background 240)
     (q/fill 0 0 0)
